@@ -13,14 +13,14 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class Film {
 
-    int filmId;
-    @NotBlank (message = "Название не может быть пустым")
-    String filmName;
+    private int filmId;
+    @NotBlank(message = "Название не может быть пустым")
+    private String filmName;
     @NotBlank
-    String filmDescription;
+    private String filmDescription;
     @Past
-    LocalDate releaseDate;
+    private LocalDate releaseDate;
     @Positive(message = "Продолжительность не может быть отрицательной")
-    int duration;
+    private int duration;
 
 }

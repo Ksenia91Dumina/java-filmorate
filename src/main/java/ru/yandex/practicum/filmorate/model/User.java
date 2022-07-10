@@ -5,6 +5,7 @@ import lombok.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
+import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
 
 @Getter
@@ -13,14 +14,14 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class User {
 
-int id;
-@NotBlank (message = "Почта не может быть пустой")
-@Email(message = "Ошибка формата электронной почты")
-String email;
-@NotBlank (message = "Логин не может быть пустым")
-String login;
-String name;
-@Past (message = "Дата не может быть в будущем")
-LocalDate birthday;
+    private int id;
+    @NotBlank(message = "Почта не может быть пустой")
+    @Email(message = "Ошибка формата электронной почты")
+    private String email;
+    @NotBlank(message = "Логин не может быть пустым")
+    private String login;
+    private String name;
+    @Past(message = "Дата не может быть в будущем")
+    private LocalDate birthday;
 
 }
