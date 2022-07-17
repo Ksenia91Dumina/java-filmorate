@@ -31,7 +31,7 @@ class FilmValidationsTest {
                 "src/test/java/ru/yandex/practicum/filmorate/controllers/textMoreThan200.txt")),
                 StandardCharsets.UTF_8);
 
-        film.setFilmDescription(text);
+        film.setDescription(text);
         assertThrows(ValidationException.class, () -> FilmValidations.validateDescription(film));
     }
 
@@ -39,6 +39,6 @@ class FilmValidationsTest {
     void validateDate() {
         Film film = new Film();
         film.setReleaseDate(LocalDate.of(1700, 10, 10));
-        assertThrows(ValidationException.class, () -> FilmValidations.validateDate(film, film.getReleaseDate()));
+        assertThrows(ValidationException.class, () -> FilmValidations.validateDate(film));
     }
 }

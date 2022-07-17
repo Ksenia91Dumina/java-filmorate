@@ -15,9 +15,9 @@ public class Film {
 
     private int filmId;
     @NotBlank(message = "Название не может быть пустым")
-    private String filmName;
+    private String name;
     @NotBlank
-    private String filmDescription;
+    private String description;
     @Past
     private LocalDate releaseDate;
     @Positive(message = "Продолжительность не может быть отрицательной")

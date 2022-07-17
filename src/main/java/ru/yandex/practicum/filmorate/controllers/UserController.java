@@ -6,8 +6,9 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.UserValidations;
 import ru.yandex.practicum.filmorate.model.ValidationException;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @Slf4j
@@ -16,8 +17,8 @@ public class UserController {
     private final HashMap<Integer, User> users = new HashMap<>();
 
     @GetMapping("users")
-    public Map<Integer, User> getAllUsers() {
-        return Map.copyOf(users);
+    public Collection<User> getAllUsers() {
+        return users.values();
     }
 
     @PostMapping("users")
@@ -33,7 +34,7 @@ public class UserController {
     }
 
     @PutMapping("users")
-    public User updateUser(@RequestBody User user) {
+    public User updateUser(@RequestBody User user) throws ValidationException{
         if (users.containsKey(user.getId())) {
             users.put(user.getId(), user);
             log.info("Изменен пользователь " + user.getLogin());
