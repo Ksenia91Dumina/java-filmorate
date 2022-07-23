@@ -1,39 +1,49 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.UserValidations;
-import ru.yandex.practicum.filmorate.model.ValidationException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 
 @RestController
+@RequestMapping("users")
 @Slf4j
 public class UserController {
-    private int uniqueID = 0;
+    @Autowired
+    UserService userService;
+    private static int uniqueID = 0;
     private final HashMap<Integer, User> users = new HashMap<>();
 
-    @GetMapping("users")
+    @GetMapping()
     public Collection<User> getAllUsers() {
         return users.values();
     }
 
-    @PostMapping("users")
+    @GetMapping("/{userId}")
+    User getUser(@PathVariable int userId){
+        return userService.get(userId);
+    }
+
+    @PostMapping()
     public User createUser(@RequestBody User user) {
-        user.setId(getUniqueID());
+        user.setId(++uniqueID);
         UserValidations.validateBirthday(user);
         UserValidations.validateName(user);
         UserValidations.validateLogin(user);
         UserValidations.validateEmail(user);
-        users.put(user.getId(), user);
+        //users.put(user.getId(), user);
+        User savedUser = userService.save(user);
         log.info("Создан пользователь " + user.getLogin());
-        return user;
+        return savedUser;
     }
 
-    @PutMapping("users")
+    @PutMapping()
     public User updateUser(@RequestBody User user) throws ValidationException{
         if (users.containsKey(user.getId())) {
             users.put(user.getId(), user);
@@ -45,8 +55,24 @@ public class UserController {
         }
     }
 
-    public int getUniqueID() {
-        return ++uniqueID;
+    @PutMapping("/users/{userId}/friends/{friendId}")
+    public void addFriend(@PathVariable int userId, @PathVariable int friendId){
+        userService.addFriend(userId, friendId);
+    }
+
+    @DeleteMapping("/users/{userId}/friends/{friendId}")
+    public void deleteFriend(@PathVariable int userId, @PathVariable int friendId){
+        userService.deleteFriend(userId, friendId);
+    }
+
+    @GetMapping("/users/{userId}/friends")
+    public void getFriends(@PathVariable int userId){
+        userService.getFriends(userId);
+    }
+
+    @GetMapping("/users/{userId}/friends/common/{otherId}")
+    public void getMutualFriends(@PathVariable int userId, @PathVariable int otherId){
+        userService.getMutualFriends(userId, otherId);
     }
 
 }

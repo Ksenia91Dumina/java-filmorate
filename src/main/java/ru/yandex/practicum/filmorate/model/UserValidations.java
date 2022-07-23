@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.model;
 
+import ru.yandex.practicum.filmorate.exception.ValidationException;
+
 import java.time.LocalDate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

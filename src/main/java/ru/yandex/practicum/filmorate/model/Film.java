@@ -1,11 +1,14 @@
 package ru.yandex.practicum.filmorate.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -13,7 +16,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class Film {
 
-    private int filmId;
+    private int id;
     @NotBlank(message = "Название не может быть пустым")
     private String name;
     @NotBlank
@@ -23,4 +26,10 @@ public class Film {
     @Positive(message = "Продолжительность не может быть отрицательной")
     private int duration;
 
+    @JsonIgnore
+    Set<Integer> userIds = new HashSet<Integer>();
+
+    public static int getUserIdSize(Film film){
+        return film.getUserIds().size();
+    }
 }

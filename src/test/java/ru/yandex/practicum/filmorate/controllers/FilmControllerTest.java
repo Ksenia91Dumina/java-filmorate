@@ -11,16 +11,20 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FilmControllerTest {
     protected FilmController filmController;
-    protected Film film1;
-    protected Film film2;
+    protected Film film1 = new Film();
+    protected Film film2 = new Film();
 
     @BeforeEach
     void init() {
         filmController = new FilmController();
-        film1 = new Film(filmController.getUniqueID(), "Film1 name", "description of Film1",
-                LocalDate.of(2000, 10, 10), 135);
-        film2 = new Film(filmController.getUniqueID(), "Film2 name", "description of Film2",
-                LocalDate.of(2010, 06, 15), 170);
+        film1.setName("Film1 name");
+        film1.setDescription("description of Film1");
+        film1.setReleaseDate(LocalDate.of(2000, 10, 10));
+        film1.setDuration(135);
+        film2.setName("Film2 name");
+        film2.setDescription("description of Film2");
+        film2.setReleaseDate(LocalDate.of(2010, 06, 15));
+        film2.setDuration(170);
         filmController.createFilm(film1);
         filmController.createFilm(film2);
     }
@@ -30,20 +34,19 @@ class FilmControllerTest {
         final Collection<Film> films = filmController.getAllFilms();
         assertNotNull(films);
         assertEquals(films.size(), 2, "Два фильма");
-        //assertEquals(film1, films.get(film1.getFilmId()));
-        //assertEquals(film2, films.get(film2.getFilmId()));
     }
 
     @Test
     void createFilm() {
-        Film newFilm = new Film(filmController.getUniqueID(), "New Film name",
-                "description of New Film",
-                LocalDate.of(2022, 06, 15), 170);
+        Film newFilm = new Film();
+        film2.setName("New Film name");
+        film2.setDescription("description of New Film");
+        film2.setReleaseDate(LocalDate.of(2022, 06, 15));
+        film2.setDuration(170);
         filmController.createFilm(newFilm);
         final Collection<Film> films = filmController.getAllFilms();
         assertNotNull(films);
         assertEquals(films.size(), 3, "Три фильма");
-       // assertEquals(newFilm, films.get(newFilm.getFilmId()));
     }
 
     @Test
@@ -55,9 +58,5 @@ class FilmControllerTest {
         assertEquals("New Name", film1.getName(), "Фильм обновлен");
     }
 
-    @Test
-    void getUniqueID() {
-        assertNotEquals(film1.getFilmId(), film2.getFilmId(), "У фильмов разные id");
-    }
 
 }

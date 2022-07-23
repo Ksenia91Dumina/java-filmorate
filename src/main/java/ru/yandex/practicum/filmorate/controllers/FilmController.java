@@ -1,41 +1,50 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmValidations;
-import ru.yandex.practicum.filmorate.model.ValidationException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
 
 @RestController
+@RequestMapping("films")
 @Slf4j
 public class FilmController {
+    @Autowired
+    FilmService filmService;
     private int uniqueID = 0;
     private final HashMap<Integer, Film> films = new HashMap<>();
 
-    @GetMapping("films")
+    @GetMapping()
     public Collection<Film> getAllFilms() {
         return films.values();
     }
 
-    @PostMapping("films")
+    @GetMapping("/{filmId}")
+    Film getFilm(@PathVariable int filmId){
+        return filmService.get(filmId);
+    }
+
+    @PostMapping()
     public Film createFilm(@RequestBody Film film) {
-        film.setFilmId(getUniqueID());
+        film.setId(++uniqueID);
         FilmValidations.validateDescription(film);
         FilmValidations.validateDate(film);
-        films.put(film.getFilmId(), film);
+        films.put(film.getId(), film);
         log.info("Создан фильм " + film.getName());
         return film;
     }
 
-    @PutMapping("films")
+    @PutMapping()
     public Film updateFilm(@RequestBody Film film) throws ValidationException {
         if (!(films.isEmpty())) {
-            if (films.containsKey(film.getFilmId())) {
-                films.put(film.getFilmId(), film);
+            if (films.containsKey(film.getId())) {
+                films.put(film.getId(), film);
                 log.info("Изменен фильм " + film.getName());
             } else {
                 log.info("Фильма не существует");
@@ -45,8 +54,18 @@ public class FilmController {
         return film;
     }
 
+    @PutMapping("films/{id}/like/{userId}")
+    public void addLike(@RequestBody int id, @RequestBody int userId) {
+        filmService.addLike(userId, id);
+    }
 
-    public int getUniqueID() {
-        return ++uniqueID;
+    @DeleteMapping("films/{id}/like/{userId}")
+    public void deleteLike(@RequestBody int id, @RequestBody int userId) {
+        filmService.deleteLike(userId, id);
+    }
+
+    @GetMapping("films/popular?count={count}")
+    public void raitingFilm(@RequestBody int count){
+        filmService.raitingFilm(count);
     }
 }

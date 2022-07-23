@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
-import ru.yandex.practicum.filmorate.controllers.FilmController;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 
 import java.time.LocalDate;
 

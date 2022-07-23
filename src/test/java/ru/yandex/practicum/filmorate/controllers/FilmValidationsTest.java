@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmValidations;
-import ru.yandex.practicum.filmorate.model.ValidationException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
