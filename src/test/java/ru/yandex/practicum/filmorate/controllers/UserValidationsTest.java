@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.controllers;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.UserValidations;
@@ -12,12 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UserValidationsTest {
 
-    protected UserController userController;
-
-    @BeforeEach
-    void init() {
-        userController = new UserController();
-    }
+    protected UserController userController = new UserController();
 
     @Test
     void validateBirthdayTest() {

@@ -1,8 +1,11 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.UserValidations;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -11,22 +14,22 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import java.util.Collection;
 import java.util.HashMap;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("users")
 @Slf4j
 public class UserController {
     @Autowired
-    UserService userService;
+    private final UserService userService = new UserService();
     private static int uniqueID = 0;
-    private final HashMap<Integer, User> users = new HashMap<>();
 
     @GetMapping()
     public Collection<User> getAllUsers() {
-        return users.values();
+        return userService.getAllUsers();
     }
 
     @GetMapping("/{userId}")
-    User getUser(@PathVariable int userId){
+    User getUser(@PathVariable int userId) {
         return userService.get(userId);
     }
 
@@ -37,42 +40,38 @@ public class UserController {
         UserValidations.validateName(user);
         UserValidations.validateLogin(user);
         UserValidations.validateEmail(user);
-        //users.put(user.getId(), user);
-        User savedUser = userService.save(user);
+        userService.save(user);
         log.info("Создан пользователь " + user.getLogin());
-        return savedUser;
+        return user;
     }
 
     @PutMapping()
-    public User updateUser(@RequestBody User user) throws ValidationException{
-        if (users.containsKey(user.getId())) {
-            users.put(user.getId(), user);
-            log.info("Изменен пользователь " + user.getLogin());
-            return user;
-        } else {
-            log.info("Пользователь не найден");
-            throw new ValidationException("Пользователь не найден");
-        }
+    public User updateUser(@RequestBody User user) {
+        UserValidations.validateForUpdateUser(user);
+        userService.updateUser(user);
+        log.info("Изменен пользователь " + user.getLogin());
+        return user;
     }
 
     @PutMapping("/users/{userId}/friends/{friendId}")
-    public void addFriend(@PathVariable int userId, @PathVariable int friendId){
+    public void addFriend(@PathVariable int userId, @PathVariable int friendId) {
         userService.addFriend(userId, friendId);
     }
 
     @DeleteMapping("/users/{userId}/friends/{friendId}")
-    public void deleteFriend(@PathVariable int userId, @PathVariable int friendId){
+    public void deleteFriend(@PathVariable int userId, @PathVariable int friendId) {
         userService.deleteFriend(userId, friendId);
     }
 
     @GetMapping("/users/{userId}/friends")
-    public void getFriends(@PathVariable int userId){
+    public void getFriends(@PathVariable int userId) {
         userService.getFriends(userId);
     }
 
     @GetMapping("/users/{userId}/friends/common/{otherId}")
-    public void getMutualFriends(@PathVariable int userId, @PathVariable int otherId){
-        userService.getMutualFriends(userId, otherId);
+    public void getCommonFriends(@PathVariable int userId, @PathVariable int otherId) {
+        userService.getCommonFriends(userId, otherId);
     }
+
 
 }

@@ -16,15 +16,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FilmValidationsTest {
 
-    protected FilmController filmController;
-
-    @BeforeEach
-    void init() {
-        filmController = new FilmController();
-    }
+    public FilmController filmController = new FilmController();
 
     @Test
-    void validateDescription() throws IOException {
+    void validateDescriptionTest() throws IOException {
         Film film = new Film();
         String text = null;
         text = new String(Files.readAllBytes(Paths.get(
@@ -36,9 +31,21 @@ class FilmValidationsTest {
     }
 
     @Test
-    void validateDate() {
+    void validateDateTest() {
         Film film = new Film();
         film.setReleaseDate(LocalDate.of(1700, 10, 10));
         assertThrows(ValidationException.class, () -> FilmValidations.validateDate(film));
+    }
+
+    @Test
+    void validateForUpdateFilmTest(){
+        Film newFilm = new Film();
+        newFilm.setName("New Film name");
+        newFilm.setDescription("description of New Film");
+        newFilm.setReleaseDate(LocalDate.of(2022, 06, 15));
+        newFilm.setDuration(170);
+        filmController.createFilm(newFilm);
+        filmController.removeFilm(newFilm);
+        assertThrows(ValidationException.class, () -> FilmValidations.validateForUpdateFilm(newFilm));
     }
 }

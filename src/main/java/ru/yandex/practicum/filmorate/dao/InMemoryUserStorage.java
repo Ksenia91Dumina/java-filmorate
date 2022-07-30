@@ -1,29 +1,39 @@
 package ru.yandex.practicum.filmorate.dao;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Component
 public class InMemoryUserStorage implements UserStorage {
 
-    HashMap<Integer, User> userMap = new HashMap<>();
+    private HashMap<Integer, User> userMap = new HashMap<>();
 
     @Override
-    public Collection<Integer> getUserMap() {
-        return userMap.keySet();
+    public Collection<User> getUserMap() {
+        return userMap.values();
     }
 
     @Override
-    public User get(int userId){
+    public User getUserById(int userId) {
         return userMap.get(userId);
     }
 
     @Override
-    public User save(User user){
+    public User save(User user) {
+        userMap.put(user.getId(), user);
+        return user;
+    }
+
+    @Override
+    public User updateUser(User user){
         userMap.put(user.getId(), user);
         return user;
     }
@@ -41,31 +51,24 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public HashMap getFriends(int userId){
-        User user = get(userId);
+    public HashMap<Integer, User> getFriends(int userId) {
+        User user = getUserById(userId);
         HashMap<Integer, User> allFriends = new HashMap<>();
         Set<Integer> friendsId = user.getFriendIds();
-        for(Integer id: friendsId){
-            User friend = get(id);
+        for (Integer id : friendsId) {
+            User friend = getUserById(id);
             allFriends.put(id, friend);
         }
         return allFriends;
     }
 
     @Override
-    public HashMap getMutualFriends(int userId, int otherId){
-        User user = get(userId);
-        User otherUser = get(otherId);
-        HashMap<Integer, User> mutualFriends = new HashMap<>();
-        Set<Integer> friendsIdForUser = user.getFriendIds();
-        Set<Integer> friendsIdForOtherUser = otherUser.getFriendIds();
-        for(Integer userFriendId: friendsIdForUser){
-            for(Integer otherUserFriendId: friendsIdForOtherUser){
-                if (userFriendId == otherUserFriendId){
-                    mutualFriends.put(userFriendId, get(userFriendId));
-                }
-            }
-        }
-        return mutualFriends;
+    public List<User> getCommonFriends(int userId, int otherId) {
+        HashMap<Integer, User> userFriends = getFriends(userId);
+        HashMap<Integer, User> otherUserFriends = getFriends(otherId);
+        List<User> commonFriends = (List<User>)
+                userFriends.values().stream()
+                        .filter(otherUserFriends.values()::contains).collect(Collectors.toList());
+        return commonFriends;
     }
 }

@@ -1,12 +1,14 @@
 package ru.yandex.practicum.filmorate.dao;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.controllers.FilmController;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
 
@@ -14,8 +16,8 @@ public class InMemoryFilmStorage implements FilmStorage {
     public int generator = 0;
 
     @Override
-    public Collection<Integer> getFilmMap() {
-        return filmMap.keySet();
+    public Collection<Film> getFilmMap() {
+        return filmMap.values();
     }
 
     @Override
@@ -31,6 +33,17 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public void removeFilm(Film film){
+        filmMap.remove(film.getId());
+    }
+
+    @Override
+    public Film updateFilm(Film film){
+        filmMap.put(film.getId(), film);
+        return film;
+    }
+
+    @Override
     public void addLike(User user, Film film) {
         film.getUserIds().add(user.getId());
     }
@@ -41,24 +54,14 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Set raitingFilm(int count){
+    public List<Film> raitingFilm(int count) {
 
-        TreeSet<Film> raitingList = new TreeSet<>(Comparator.comparing(Film::getUserIdSize));
+        List<Film> raitingFilms = (List<Film>) filmMap.values().stream()
+                .sorted(Comparator.comparingInt(film0 -> film0.getUserIds().size()))
+                .limit(count)
+                .collect(Collectors.toList());
 
-        for(Integer id: filmMap.keySet()){
-            Film film = filmMap.get(id);
-            raitingList.add(film);
-        }
-
-        if(raitingList.size()>count){
-            int difference = count-raitingList.size();
-            for(int i = 0; i<difference; i++){
-                raitingList.remove(raitingList.last());
-            }
-        }
-
-        return raitingList;
+        return raitingFilms;
     }
-
 
 }

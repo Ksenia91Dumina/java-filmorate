@@ -10,13 +10,13 @@ import java.util.Collection;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FilmControllerTest {
-    protected FilmController filmController;
+
+    protected FilmController filmController = new FilmController();
     protected Film film1 = new Film();
     protected Film film2 = new Film();
 
     @BeforeEach
     void init() {
-        filmController = new FilmController();
         film1.setName("Film1 name");
         film1.setDescription("description of Film1");
         film1.setReleaseDate(LocalDate.of(2000, 10, 10));
@@ -39,10 +39,10 @@ class FilmControllerTest {
     @Test
     void createFilm() {
         Film newFilm = new Film();
-        film2.setName("New Film name");
-        film2.setDescription("description of New Film");
-        film2.setReleaseDate(LocalDate.of(2022, 06, 15));
-        film2.setDuration(170);
+        newFilm.setName("New Film name");
+        newFilm.setDescription("description of New Film");
+        newFilm.setReleaseDate(LocalDate.of(2022, 06, 15));
+        newFilm.setDuration(170);
         filmController.createFilm(newFilm);
         final Collection<Film> films = filmController.getAllFilms();
         assertNotNull(films);

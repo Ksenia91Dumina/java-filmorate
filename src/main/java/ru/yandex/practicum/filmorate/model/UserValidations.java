@@ -1,13 +1,19 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.extern.slf4j.Slf4j;
+import ru.yandex.practicum.filmorate.controllers.UserController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 public class UserValidations {
 
+    public static UserController userController = new UserController();
     private static Pattern pattern;
     private static Matcher matcher;
 
@@ -26,7 +32,7 @@ public class UserValidations {
     public static void validateLogin(User user) {
         pattern = Pattern.compile("\\s+");
         matcher = pattern.matcher(user.getLogin());
-        if (!matcher.matches()) {
+        if (matcher.matches()) {
             throw new ValidationException("Логин не может содержать пробелы");
         }
     }
@@ -36,6 +42,16 @@ public class UserValidations {
         matcher = pattern.matcher(user.getEmail());
         if (!matcher.matches()) {
             throw new ValidationException("Некорректный формат почты");
+        }
+    }
+
+    public static void validateForUpdateUser(User user) {
+        Collection<User> users = userController.getAllUsers();
+        if (!(users.isEmpty())) {
+            if (!users.contains(user)) {
+                log.info("Пользователя не существует");
+                throw new ValidationException("Пользователя не существует");
+            }
         }
     }
 

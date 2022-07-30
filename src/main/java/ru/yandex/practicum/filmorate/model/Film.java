@@ -27,9 +27,6 @@ public class Film {
     private int duration;
 
     @JsonIgnore
-    Set<Integer> userIds = new HashSet<Integer>();
+    private Set<Integer> userIds = new HashSet<Integer>();
 
-    public static int getUserIdSize(Film film){
-        return film.getUserIds().size();
-    }
 }

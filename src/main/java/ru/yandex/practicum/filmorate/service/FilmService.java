@@ -1,17 +1,27 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.dao.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.util.Collection;
+
+@RequiredArgsConstructor
+@Service
 public class FilmService {
     @Autowired
-    InMemoryUserStorage userStorage;
+    InMemoryUserStorage userStorage = new InMemoryUserStorage();
     @Autowired
-    InMemoryFilmStorage filmStorage;
+    InMemoryFilmStorage filmStorage = new InMemoryFilmStorage();
+
+    public Collection<Film> getAllFilms() {
+        return filmStorage.getFilmMap();
+    }
 
     public Film get(int filmId) {
         final Film film = filmStorage.get(filmId);
@@ -25,8 +35,14 @@ public class FilmService {
         return filmStorage.save(film);
     }
 
+    public void removeFilm(Film film){filmStorage.removeFilm(film);}
+
+    public Film updateFilm(Film film){
+        return filmStorage.updateFilm(film);
+    }
+
     public void addLike(int userId, int filmId) {
-        User user = userStorage.get(userId);
+        User user = userStorage.getUserById(userId);
         Film film = filmStorage.get(filmId);
         if(userStorage.getUserMap().contains(userId) && filmStorage.getFilmMap().contains(filmId)) {
             filmStorage.addLike(user, film);
@@ -34,7 +50,7 @@ public class FilmService {
     }
 
     public void deleteLike(int userId, int filmId) {
-        User user = userStorage.get(userId);
+        User user = userStorage.getUserById(userId);
         Film film = filmStorage.get(filmId);
         filmStorage.deleteLike(user, film);
     }

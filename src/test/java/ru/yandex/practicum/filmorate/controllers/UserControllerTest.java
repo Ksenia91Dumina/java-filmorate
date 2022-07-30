@@ -11,14 +11,12 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserControllerTest {
-
-    protected UserController userController;
+    protected UserController userController = new UserController();
     protected User user1 = new User();
     protected User user2 = new User();
 
     @BeforeEach
     void init() {
-        userController = new UserController();
         user1.setEmail("asd@m.ru");
         user1.setLogin("login");
         user1.setName("");
@@ -35,7 +33,7 @@ class UserControllerTest {
     void getAllUsers() {
         final Collection<User> users = userController.getAllUsers();
         assertNotNull(users);
-        assertEquals(users.size(), 2, "Два пользователя");
+        assertEquals(2, users.size(),  "Два пользователя");
     }
 
 
@@ -49,7 +47,7 @@ class UserControllerTest {
         userController.createUser(newUser);
         final Collection<User> users = userController.getAllUsers();
         assertNotNull(users);
-        assertEquals(users.size(), 3, "Три пользователя");
+        assertEquals(3, users.size(),  "Три пользователя");
     }
 
     @Test

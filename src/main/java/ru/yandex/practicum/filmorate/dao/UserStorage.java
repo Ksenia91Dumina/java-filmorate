@@ -4,11 +4,12 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 public interface UserStorage {
-    Collection<Integer> getUserMap();
+    Collection<User> getUserMap();
 
-    User get(int userId);
+    User getUserById(int userId);
 
     User save(User user);
 
@@ -18,5 +19,7 @@ public interface UserStorage {
 
     HashMap getFriends(int userId);
 
-    HashMap getMutualFriends(int userId, int otherId);
+    List getCommonFriends(int userId, int otherId);
+
+    User updateUser(User user);
 }
