@@ -3,23 +3,21 @@ package ru.yandex.practicum.filmorate.controllers;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmValidations;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.Collection;
-import java.util.HashMap;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("films")
+
 @Slf4j
 public class FilmController {
-    @Autowired
-    private final FilmService filmService = new FilmService();
-    private int uniqueID = 0;
+    public final FilmService filmService;
+    private int uniqueID = 1;
 
     @GetMapping()
     public Collection<Film> getAllFilms() {

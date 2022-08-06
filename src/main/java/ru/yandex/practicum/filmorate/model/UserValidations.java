@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 @Slf4j
 public class UserValidations {
 
-    public static UserController userController = new UserController();
+    public static UserController userController;
     private static Pattern pattern;
     private static Matcher matcher;
 

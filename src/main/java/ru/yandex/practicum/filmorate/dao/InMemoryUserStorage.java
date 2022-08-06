@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @Component
 public class InMemoryUserStorage implements UserStorage {
 
-    private HashMap<Integer, User> userMap = new HashMap<>();
+    public HashMap<Integer, User> userMap = new HashMap<>();
 
     @Override
     public Collection<User> getUserMap() {
@@ -23,7 +23,13 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User getUserById(int userId) {
-        return userMap.get(userId);
+        User user = new User();
+        if (!userMap.isEmpty()) {
+            if (userMap.containsKey(userId)) {
+                user = userMap.get(userId);
+            }
+        }
+        return user;
     }
 
     @Override
@@ -33,7 +39,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User updateUser(User user){
+    public User updateUser(User user) {
         userMap.put(user.getId(), user);
         return user;
     }
@@ -66,9 +72,9 @@ public class InMemoryUserStorage implements UserStorage {
     public List<User> getCommonFriends(int userId, int otherId) {
         HashMap<Integer, User> userFriends = getFriends(userId);
         HashMap<Integer, User> otherUserFriends = getFriends(otherId);
-        List<User> commonFriends = (List<User>)
-                userFriends.values().stream()
-                        .filter(otherUserFriends.values()::contains).collect(Collectors.toList());
+        List<User> commonFriends = userFriends.values().stream()
+                .filter(otherUserFriends.values()::contains)
+                .collect(Collectors.toList());
         return commonFriends;
     }
 }

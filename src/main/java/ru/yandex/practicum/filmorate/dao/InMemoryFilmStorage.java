@@ -56,7 +56,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public List<Film> raitingFilm(int count) {
 
-        List<Film> raitingFilms = (List<Film>) filmMap.values().stream()
+        List<Film> raitingFilms = filmMap.values().stream()
                 .sorted(Comparator.comparingInt(film0 -> film0.getUserIds().size()))
                 .limit(count)
                 .collect(Collectors.toList());

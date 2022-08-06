@@ -14,9 +14,9 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Service
 public class FilmService {
-    @Autowired
-    InMemoryUserStorage userStorage = new InMemoryUserStorage();
-    @Autowired
+
+    InMemoryUserStorage userStorage;
+
     InMemoryFilmStorage filmStorage = new InMemoryFilmStorage();
 
     public Collection<Film> getAllFilms() {
@@ -35,16 +35,18 @@ public class FilmService {
         return filmStorage.save(film);
     }
 
-    public void removeFilm(Film film){filmStorage.removeFilm(film);}
+    public void removeFilm(Film film) {
+        filmStorage.removeFilm(film);
+    }
 
-    public Film updateFilm(Film film){
+    public Film updateFilm(Film film) {
         return filmStorage.updateFilm(film);
     }
 
     public void addLike(int userId, int filmId) {
         User user = userStorage.getUserById(userId);
         Film film = filmStorage.get(filmId);
-        if(userStorage.getUserMap().contains(userId) && filmStorage.getFilmMap().contains(filmId)) {
+        if (userStorage.getUserMap().contains(userId) && filmStorage.getFilmMap().contains(filmId)) {
             filmStorage.addLike(user, film);
         }
     }
@@ -56,7 +58,7 @@ public class FilmService {
     }
 
     public void raitingFilm(int count) {
-        if(count == 0)
+        if (count == 0)
             count = 10;
         filmStorage.raitingFilm(count);
     }

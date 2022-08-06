@@ -1,8 +1,11 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -11,12 +14,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FilmControllerTest {
 
-    protected FilmController filmController = new FilmController();
-    protected Film film1 = new Film();
-    protected Film film2 = new Film();
+    public FilmController filmController;
+    public Film film1 = new Film();
+    public Film film2 = new Film();
 
     @BeforeEach
     void init() {
+        filmController = new FilmController(new FilmService());
         film1.setName("Film1 name");
         film1.setDescription("description of Film1");
         film1.setReleaseDate(LocalDate.of(2000, 10, 10));

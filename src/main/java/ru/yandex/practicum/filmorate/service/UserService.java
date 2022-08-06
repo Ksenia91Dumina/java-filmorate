@@ -14,8 +14,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class UserService {
-    @Autowired
-    InMemoryUserStorage userStorage = new InMemoryUserStorage();
+
+    InMemoryUserStorage userStorage;
 
     public User get(int userId) {
         final User user = userStorage.getUserById(userId);
@@ -33,14 +33,14 @@ public class UserService {
         return userStorage.save(user);
     }
 
-    public User updateUser(User user){
+    public User updateUser(User user) {
         return userStorage.updateUser(user);
     }
 
     public void addFriend(int userId, int friendId) {
         final User user = userStorage.getUserById(userId);
         User friend = userStorage.getUserById(friendId);
-        if(userStorage.getUserMap().contains(userId) && userStorage.getUserMap().contains(friendId)){
+        if (userStorage.getUserMap().contains(userId) && userStorage.getUserMap().contains(friendId)) {
             userStorage.addFriend(user, friend);
         }
     }

@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.controllers;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmValidations;
@@ -16,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FilmValidationsTest {
 
-    public FilmController filmController = new FilmController();
+    public FilmController filmController;
 
     @Test
     void validateDescriptionTest() throws IOException {
@@ -38,7 +37,7 @@ class FilmValidationsTest {
     }
 
     @Test
-    void validateForUpdateFilmTest(){
+    void validateForUpdateFilmTest() {
         Film newFilm = new Film();
         newFilm.setName("New Film name");
         newFilm.setDescription("description of New Film");

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.controllers.FilmController;
 import ru.yandex.practicum.filmorate.dao.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -13,7 +14,7 @@ import java.util.HashMap;
 public class FilmValidations {
 
     public static LocalDate earliestDate = LocalDate.of(1895, 12, 28);
-    public static FilmController fc = new FilmController();
+    public static FilmController fc = new FilmController(new FilmService());
 
     public static void validateDescription(Film film) {
         if (film.getDescription().length() > 200) {

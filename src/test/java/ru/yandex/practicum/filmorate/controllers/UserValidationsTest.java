@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UserValidationsTest {
 
-    protected UserController userController = new UserController();
+    protected UserController userController;
 
     @Test
     void validateBirthdayTest() {

@@ -1,19 +1,20 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@RequiredArgsConstructor
 class UserControllerTest {
-    protected UserController userController = new UserController();
-    protected User user1 = new User();
-    protected User user2 = new User();
+    public UserController userController;
+    public User user1 = new User();
+    public User user2 = new User();
 
     @BeforeEach
     void init() {
@@ -33,7 +34,7 @@ class UserControllerTest {
     void getAllUsers() {
         final Collection<User> users = userController.getAllUsers();
         assertNotNull(users);
-        assertEquals(2, users.size(),  "Два пользователя");
+        assertEquals(2, users.size(), "Два пользователя");
     }
 
 
@@ -47,7 +48,7 @@ class UserControllerTest {
         userController.createUser(newUser);
         final Collection<User> users = userController.getAllUsers();
         assertNotNull(users);
-        assertEquals(3, users.size(),  "Три пользователя");
+        assertEquals(3, users.size(), "Три пользователя");
     }
 
     @Test
