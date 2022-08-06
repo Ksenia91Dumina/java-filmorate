@@ -15,7 +15,7 @@ import java.util.List;
 @Service
 public class UserService {
 
-    InMemoryUserStorage userStorage;
+    public InMemoryUserStorage userStorage = new InMemoryUserStorage();
 
     public User get(int userId) {
         final User user = userStorage.getUserById(userId);

@@ -7,21 +7,19 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryFilmStorageTest {
 
-    public InMemoryFilmStorage inMemoryFilmStorage;
+    public InMemoryFilmStorage inMemoryFilmStorage = new InMemoryFilmStorage();;
     public Film film1 = new Film();
     public Film film2 = new Film();
     public int uniqueId = 1;
 
     @BeforeEach
     void init() {
-        inMemoryFilmStorage = new InMemoryFilmStorage();
         film1.setId(++uniqueId);
         film1.setName("Film1 name");
         film1.setDescription("description of Film1");

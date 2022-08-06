@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.controllers.FilmController;
-import ru.yandex.practicum.filmorate.dao.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -30,11 +30,10 @@ public class FilmValidations {
 
     public static void validateForUpdateFilm(Film film) {
         Collection<Film> films = fc.getAllFilms();
-
-        if (!(films.isEmpty())) {
+        if (!films.isEmpty()) {
             if (!films.contains(film)) {
                 log.info("Фильма не существует");
-                throw new ValidationException("Фильма не существует");
+                throw new NotFoundException("Фильма не существует");
             }
         }
     }

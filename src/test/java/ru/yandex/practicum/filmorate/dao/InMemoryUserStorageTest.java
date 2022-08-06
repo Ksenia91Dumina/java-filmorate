@@ -12,14 +12,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class InMemoryUserStorageTest {
-    public InMemoryUserStorage inMemoryUserStorage;
+    public InMemoryUserStorage inMemoryUserStorage = new InMemoryUserStorage();
     public User user1 = new User();
     public User user2 = new User();
     public int uniqueId = 1;
 
     @BeforeEach
     void init() {
-        inMemoryUserStorage = new InMemoryUserStorage();
         user1.setId(++uniqueId);
         user1.setEmail("asd@m.ru");
         user1.setLogin("login");
@@ -43,9 +42,12 @@ class InMemoryUserStorageTest {
 
     @Test
     void getUserByIdTest() {
-        User userToCheck = inMemoryUserStorage.getUserById(1);
-        assertEquals(user1.getName(), userToCheck.getName(), "Имена равны");
-        assertEquals(user1, userToCheck, "Пользователи равны");
+        User userToCheck = inMemoryUserStorage.getUserById(2);
+        System.out.println(user2.getName());
+        System.out.println(userToCheck.getName());
+        System.out.println(inMemoryUserStorage.getUserById(2).getName());
+        assertEquals(user2.getName(), userToCheck.getName(), "Имена равны");
+        assertEquals(user2, userToCheck, "Пользователи равны");
     }
 
     @Test

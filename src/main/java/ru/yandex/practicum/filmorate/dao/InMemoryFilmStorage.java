@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 public class InMemoryFilmStorage implements FilmStorage {
 
     public HashMap<Integer, Film> filmMap = new HashMap<>();
-    public int generator = 0;
 
     @Override
     public Collection<Film> getFilmMap() {
@@ -22,23 +21,28 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film get(int filmId) {
-        return filmMap.get(filmId);
+        Film film = new Film();
+        if (!filmMap.isEmpty()) {
+            if (filmMap.containsKey(filmId)) {
+                film = filmMap.get(filmId);
+            }
+        }
+        return film;
     }
 
     @Override
     public Film save(Film film) {
-        film.setId(++generator);
         filmMap.put(film.getId(), film);
         return film;
     }
 
     @Override
-    public void removeFilm(Film film){
+    public void removeFilm(Film film) {
         filmMap.remove(film.getId());
     }
 
     @Override
-    public Film updateFilm(Film film){
+    public Film updateFilm(Film film) {
         filmMap.put(film.getId(), film);
         return film;
     }
