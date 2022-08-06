@@ -2,13 +2,13 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.controllers.FilmController;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.Objects;
+
+import static jdk.nashorn.internal.objects.Global.undefined;
 
 @Slf4j
 public class FilmValidations {
@@ -22,19 +22,40 @@ public class FilmValidations {
         }
     }
 
+    public static void validateName(Film film) {
+        if (film.getName().isBlank() || film.getName().isEmpty()) {
+            throw new ValidationException("Название фильма не может быть пустым");
+        }
+    }
+
     public static void validateDate(Film film) {
         if (film.getReleaseDate().isBefore(earliestDate)) {
             throw new ValidationException("Дата релиза не может быть раньше 28.12.1895");
         }
     }
 
+    //я не знаю что здесь делать((( как правильно проверить(((
     public static void validateForUpdateFilm(Film film) {
-        Collection<Film> films = fc.getAllFilms();
+        /*List<Film> films = fc.getAllFilms();
         if (!films.isEmpty()) {
             if (!films.contains(film)) {
                 log.info("Фильма не существует");
-                throw new NotFoundException("Фильма не существует");
+                throw new ValidationException("Фильма не существует");
             }
+        }*/
+        /*if(film == undefined){
+            throw new ValidationException("Фильма не существует");
+        }*/
+
+        if(film != Objects.requireNonNull(film)){
+            throw new ValidationException("Фильма не существует");
+        }
+
+    }
+
+    public static void validateDuration(Film film){
+        if(film.getDuration() <= 0){
+            throw new ValidationException("Продолжительность фильма не может быть отрицательной или = 0");
         }
     }
 

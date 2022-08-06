@@ -33,10 +33,24 @@ class FilmValidationsTest {
     }
 
     @Test
+    void validateNameTest() {
+        Film film = new Film();
+        film.setName("");
+        assertThrows(ValidationException.class, () -> FilmValidations.validateName(film));
+    }
+
+    @Test
     void validateDateTest() {
         Film film = new Film();
         film.setReleaseDate(LocalDate.of(1700, 10, 10));
         assertThrows(ValidationException.class, () -> FilmValidations.validateDate(film));
+    }
+
+    @Test
+    void validateDuration() {
+        Film newFilm = new Film();
+        newFilm.setDuration(-50);
+        assertThrows(ValidationException.class, () -> FilmValidations.validateDuration(newFilm));
     }
 
     @Test
@@ -49,6 +63,6 @@ class FilmValidationsTest {
         newFilm.setDuration(170);
         filmController.createFilm(newFilm);
         filmController.removeFilm(newFilm);
-        assertThrows(NotFoundException.class, () -> FilmValidations.validateForUpdateFilm(newFilm));
+        assertThrows(ValidationException.class, () -> FilmValidations.validateForUpdateFilm(newFilm));
     }
 }

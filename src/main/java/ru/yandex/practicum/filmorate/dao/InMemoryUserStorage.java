@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -17,8 +14,8 @@ public class InMemoryUserStorage implements UserStorage {
     public HashMap<Integer, User> userMap = new HashMap<>();
 
     @Override
-    public Collection<User> getUserMap() {
-        return userMap.values();
+    public List<User> getUserMap() {
+        return new ArrayList<>(userMap.values());
     }
 
     @Override

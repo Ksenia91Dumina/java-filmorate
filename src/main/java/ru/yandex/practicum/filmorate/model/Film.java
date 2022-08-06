@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
@@ -17,9 +18,9 @@ import java.util.Set;
 public class Film {
 
     private int id;
-    @NotBlank(message = "Название не может быть пустым")
+    @NotNull(message = "Название не может быть пустым")
     private String name;
-    @NotBlank
+    @NotNull
     private String description;
     @Past
     private LocalDate releaseDate;
