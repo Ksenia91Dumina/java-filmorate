@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -27,7 +28,8 @@ public class UserDbStorage implements UserStorage {
     @Override
     public Collection<User> getUserMap() {
         String sqlQuery = "select * from USERS";
-        jdbcTemplate.query(sqlQuery, this::makeUser);
+        Collection users = jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper(User.class));
+        return users;
     }
 
 

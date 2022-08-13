@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -32,7 +33,9 @@ public class FilmDbStorage implements FilmStorage{
     }
     @Override
     public Collection<Film> getFilmMap() {
-        return null;
+        String sqlQuery = "select * from FILMS";
+        Collection films = jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper(Film.class));
+        return films;
     }
 
     @Override
