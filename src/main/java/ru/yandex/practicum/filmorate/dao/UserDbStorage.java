@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.controllers.UserController;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.*;
@@ -110,7 +111,7 @@ public class UserDbStorage implements UserStorage {
         }
 
         @Override
-        public HashMap getFriends (int userId){
+        public HashMap getFriends (int userId) throws SQLException {
             final String sqlQuery = "select USER2_ID from USERS where USER1_ID = ?";
             jdbcTemplate.update(connection -> {
                 PreparedStatement stmt = connection.prepareStatement(sqlQuery);
@@ -121,9 +122,16 @@ public class UserDbStorage implements UserStorage {
             if (users.size() != 1) {
                 return null;
             }
-            final List<Map<String, Object>> ids = jdbcTemplate.queryForList(sqlQuery);
+            final List<Integer> friendsId = jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper(Integer.class));
+            HashMap<Integer, User> friends = new HashMap<>();
+            for(Integer id : friendsId){
+                User friend = getUserById(id);
+                friends.put(id, friend);
+            }
+            return friends;
 
-            //совсем не моуг понять какой ход действий тут должен быть((
+
+            //совсем не моуг понять какой ход действий тут должен быть с поиском друзей((
 
         }
 

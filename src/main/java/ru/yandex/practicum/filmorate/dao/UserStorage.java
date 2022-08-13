@@ -21,7 +21,7 @@ public interface UserStorage {
 
     void deleteFriend(User user, User friend);
 
-    HashMap getFriends(int userId);
+    HashMap getFriends(int userId) throws SQLException;
 
     List getCommonFriends(int userId, int otherId);
 
