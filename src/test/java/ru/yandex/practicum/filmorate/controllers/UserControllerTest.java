@@ -3,26 +3,29 @@ package ru.yandex.practicum.filmorate.controllers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class UserControllerTest {
 
-    protected UserController userController;
-    protected User user1;
-    protected User user2;
+class UserControllerTest {
+    public UserController userController = new UserController(new UserService());
+    public User user1 = new User();
+    public User user2 = new User();
 
     @BeforeEach
     void init() {
-        userController = new UserController();
-        user1 = new User(userController.getUniqueID(), "asd@m.ru", "login", "",
-                LocalDate.of(1990, 12, 12));
-        user2 = new User(userController.getUniqueID(), "zxc@m.ru", "log", "name",
-                LocalDate.of(1995, 12, 12));
+        user1.setEmail("asd@m.ru");
+        user1.setLogin("login");
+        user1.setName("");
+        user1.setBirthday(LocalDate.of(1990, 12, 12));
+        user2.setEmail("zxc@m.ru");
+        user2.setLogin("log2");
+        user2.setName("name");
+        user2.setBirthday(LocalDate.of(1995, 12, 12));
         userController.createUser(user1);
         userController.createUser(user2);
     }
@@ -31,21 +34,21 @@ class UserControllerTest {
     void getAllUsers() {
         final Collection<User> users = userController.getAllUsers();
         assertNotNull(users);
-        assertEquals(users.size(), 2, "Два пользователя");
-        //assertEquals(user1, users.get(user1.getId()));
-       // assertEquals(user2, users.get(user2.getId()));
+        assertEquals(2, users.size(), "Два пользователя");
     }
 
 
     @Test
     void createUser() {
-        User newUser = new User(userController.getUniqueID(), "qwe@m.ru", "newLogin", "newName",
-                LocalDate.of(1995, 12, 12));
+        User newUser = new User();
+        newUser.setBirthday(LocalDate.of(1995, 12, 12));
+        newUser.setEmail("qwe@m.ru");
+        newUser.setLogin("newLogin");
+        newUser.setName("newName");
         userController.createUser(newUser);
         final Collection<User> users = userController.getAllUsers();
         assertNotNull(users);
-        assertEquals(users.size(), 3, "Три пользователя");
-        //assertEquals(newUser, users.get(newUser.getId()));
+        assertEquals(3, users.size(), "Три пользователя");
     }
 
     @Test
@@ -57,8 +60,4 @@ class UserControllerTest {
         assertEquals("New Name", user1.getName(), "Пользователь обновлен");
     }
 
-    @Test
-    void getUniqueID() {
-        assertNotEquals(user1.getId(), user2.getId(), "У пользователей разные id");
-    }
 }

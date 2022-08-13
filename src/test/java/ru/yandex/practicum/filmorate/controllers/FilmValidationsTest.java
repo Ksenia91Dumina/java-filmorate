@@ -1,10 +1,11 @@
 package ru.yandex.practicum.filmorate.controllers;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmValidations;
-import ru.yandex.practicum.filmorate.model.ValidationException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -16,15 +17,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FilmValidationsTest {
 
-    protected FilmController filmController;
+    public FilmController filmController = new FilmController(new FilmService());
 
-    @BeforeEach
-    void init() {
-        filmController = new FilmController();
-    }
 
     @Test
-    void validateDescription() throws IOException {
+    void validateDescriptionTest() throws IOException {
         Film film = new Film();
         String text = null;
         text = new String(Files.readAllBytes(Paths.get(
@@ -36,9 +33,36 @@ class FilmValidationsTest {
     }
 
     @Test
-    void validateDate() {
+    void validateNameTest() {
+        Film film = new Film();
+        film.setName("");
+        assertThrows(ValidationException.class, () -> FilmValidations.validateName(film));
+    }
+
+    @Test
+    void validateDateTest() {
         Film film = new Film();
         film.setReleaseDate(LocalDate.of(1700, 10, 10));
         assertThrows(ValidationException.class, () -> FilmValidations.validateDate(film));
+    }
+
+    @Test
+    void validateDuration() {
+        Film newFilm = new Film();
+        newFilm.setDuration(-50);
+        assertThrows(ValidationException.class, () -> FilmValidations.validateDuration(newFilm));
+    }
+
+    @Test
+    void validateForUpdateFilmTest() {
+        Film newFilm = new Film();
+        newFilm.setId(1);
+        newFilm.setName("New Film name");
+        newFilm.setDescription("description of New Film");
+        newFilm.setReleaseDate(LocalDate.of(2022, 06, 15));
+        newFilm.setDuration(170);
+        filmController.createFilm(newFilm);
+        filmController.removeFilm(newFilm);
+        assertThrows(ValidationException.class, () -> FilmValidations.validateForUpdateFilm(newFilm));
     }
 }
