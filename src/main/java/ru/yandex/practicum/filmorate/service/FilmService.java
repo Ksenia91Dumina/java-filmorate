@@ -7,6 +7,8 @@ import ru.yandex.practicum.filmorate.dao.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+
+import java.sql.SQLException;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -21,8 +23,13 @@ public class FilmService {
         return filmStorage.getFilmMap();
     }
 
-    public Film get(int filmId) {
-        final Film film = filmStorage.get(filmId);
+    public Film get(int filmId) throws SQLException {
+        final Film film;
+        try {
+            film = filmStorage.get(filmId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         if (film == null) {
             throw new NotFoundException("Фильм не найден");
         }
@@ -41,7 +48,7 @@ public class FilmService {
         return filmStorage.updateFilm(film);
     }
 
-    public void addLike(int userId, int filmId) {
+    public void addLike(int userId, int filmId) throws SQLException {
         User user = userStorage.getUserById(userId);
         Film film = filmStorage.get(filmId);
         if (userStorage.getUserMap().contains(userId) && filmStorage.getFilmMap().contains(filmId)) {
@@ -49,7 +56,7 @@ public class FilmService {
         }
     }
 
-    public void deleteLike(int userId, int filmId) {
+    public void deleteLike(int userId, int filmId) throws SQLException {
         User user = userStorage.getUserById(userId);
         Film film = filmStorage.get(filmId);
         filmStorage.deleteLike(user, film);
@@ -61,7 +68,7 @@ public class FilmService {
         filmStorage.raitingFilm(count);
     }
 
-    public void getGenres(int filmId){
-        filmStorage.getGenres(filmId);
+    public void setGenres(Film film){
+        filmStorage.setFilmGenre(film);
     }
 }

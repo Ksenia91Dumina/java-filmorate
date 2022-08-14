@@ -9,9 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public interface UserStorage {
-    Collection<User> getUserMap();
-
-    User getUserById(int userId) throws SQLException;
+    List<User> getUserMap();
 
     User getUserById(ResultSet rs, int userId) throws SQLException;
 

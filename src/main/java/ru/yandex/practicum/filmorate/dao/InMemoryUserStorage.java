@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -19,6 +21,11 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
+    public User getUserById(ResultSet rs, int userId) throws SQLException {
+        return null;
+    }
+
+
     public User getUserById(int userId) {
         User user = new User();
         if (!userMap.isEmpty()) {

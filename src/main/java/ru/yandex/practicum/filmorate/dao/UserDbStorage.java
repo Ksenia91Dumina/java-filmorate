@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.dao;
 
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -7,7 +9,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.controllers.UserController;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.*;
@@ -15,6 +16,8 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.*;
 
+
+@NoArgsConstructor
 @Repository
 @Primary
 public class UserDbStorage implements UserStorage {
@@ -27,9 +30,9 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public Collection<User> getUserMap() {
+    public List<User> getUserMap() {
         String sqlQuery = "select * from USERS";
-        Collection users = jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper(User.class));
+        List users = jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper(User.class));
         return users;
     }
 
@@ -124,9 +127,12 @@ public class UserDbStorage implements UserStorage {
             }
             final List<Integer> friendsId = jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper(Integer.class));
             HashMap<Integer, User> friends = new HashMap<>();
-            for(Integer id : friendsId){
-                User friend = getUserById(id);
-                friends.put(id, friend);
+            List<User> userMap = getUserMap();
+            for(Integer id : friendsId) {
+                for (User user : userMap) {
+                    if(user.getId() == id)
+                    friends.put(id, user);
+                }
             }
             return friends;
 
@@ -153,4 +159,6 @@ public class UserDbStorage implements UserStorage {
                     , user.getId());
             return user;
         }
-    }
+
+
+}

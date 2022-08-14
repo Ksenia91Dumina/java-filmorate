@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.dao;
 
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -21,6 +23,8 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
+@NoArgsConstructor
 @Repository
 @Primary
 public class FilmDbStorage implements FilmStorage{
@@ -32,14 +36,14 @@ public class FilmDbStorage implements FilmStorage{
         this.jdbcTemplate = jdbcTemplate;
     }
     @Override
-    public Collection<Film> getFilmMap() {
+    public List<Film> getFilmMap() {
         String sqlQuery = "select * from FILMS";
-        Collection films = jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper(Film.class));
+        List films = jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper(Film.class));
         return films;
     }
 
     @Override
-    public Film get(int filmId) {
+    public Film get(int filmId) throws SQLException {
         final String sqlQuery = "select * from FILMS JOIN RAITING_MPA ON () where FILM_ID = ?";
         final List<Film> films = jdbcTemplate.query(sqlQuery, FilmDbStorage::makeFilm, filmId);
         if (films.size() != 1) {
@@ -54,20 +58,6 @@ public class FilmDbStorage implements FilmStorage{
         return films.get(0);
     }
 
-    void setFilmGenre(Film film){
-        // SQL DELETE FROM FILM_GENRES WHERE FILM_ID = film.getId()
-        if(film.getGenres() == null || film.getGenres().isEmpty()){
-            return;
-        }
-        for (Genre genre : film.getGenres()){
-            //SQL INSERT INTO FILM_GENRES(FILM_ID, GENRE_ID) VALUES(?,?)
-        }
-    }
-
-    void loadFilmGenre(Film film){
-        final String sqlQuery = "SELECT NAME FROM FILM_GENRE WHERE FILM_ID = film.getId() "
-        final List<Map<String, Object>> filmGenres = jdbcTemplate.queryForList(sqlQuery);
-    }
 
 
     // с жанрами тут тоже ступор...
@@ -78,12 +68,34 @@ public class FilmDbStorage implements FilmStorage{
         }
     }
 
+    void loadFilmGenre(Film film){
+        final String sqlQuery = "SELECT NAME FROM FILM_GENRE WHERE FILM_ID = film.getId() ";
+        final List<Map<String, Object>> filmGenres = jdbcTemplate.queryForList(sqlQuery);
+    }
+
     void loadAllFilmGenre(List<Film> films){
         final List<Integer> ids = films.stream().map(f -> f.getId()).collect(Collectors.toList());
         // SELECT FILM_ID, GENRES.* FROM GENRES WHERE FILM_ID = film.getId()
         final Map<Integer, Film> filmMap = films.stream()
                 .collect(Collectors.toMap(Film::getId, film -> film, (a, b) -> b));
-        filmMap.get(FILM_ID).addGenre(new Genre());
+        //filmMap.get(FILM_ID).addGenre(new Genre());
+    }
+
+    public void setFilmGenre(Film film){
+        int filmId = film.getId();
+        if(film.getGenres() == null || film.getGenres().isEmpty()){
+            return;
+        }
+        jdbcTemplate.update("delete from FILM_GENRE where FILM_ID = ?", filmId);
+        for(Genre genre : film.getGenres()){
+            String sqlQuery = "insert into FILM_GENRE (GENRE_ID, FILM_ID) values (?,?)";
+            jdbcTemplate.update(connection -> {
+                PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
+                preparedStatement.setInt(1, genre.getId());
+                preparedStatement.setInt(2, filmId);
+                return preparedStatement;
+            });
+        }
     }
 
     @Override

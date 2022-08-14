@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmValidations;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @RestController
@@ -24,7 +25,7 @@ public class FilmController {
     }
 
     @GetMapping("/{filmId}")
-    public Film getFilm(@PathVariable int filmId) {
+    public Film getFilm(@PathVariable int filmId) throws SQLException {
         return filmService.get(filmId);
     }
 
@@ -54,12 +55,12 @@ public class FilmController {
     }
 
     @PutMapping("films/{id}/like/{userId}")
-    public void addLike(@RequestBody int id, @RequestBody int userId) {
+    public void addLike(@RequestBody int id, @RequestBody int userId) throws SQLException {
         filmService.addLike(userId, id);
     }
 
     @DeleteMapping("films/{id}/like/{userId}")
-    public void deleteLike(@RequestBody int id, @RequestBody int userId) {
+    public void deleteLike(@RequestBody int id, @RequestBody int userId) throws SQLException {
         filmService.deleteLike(userId, id);
     }
 
@@ -68,9 +69,9 @@ public class FilmController {
         filmService.raitingFilm(count);
     }
 
-    @GetMapping("/{genres}")
+    /*@GetMapping("/{genres}")
     public void getGenres(@PathVariable int filmId) {
         return filmService.getGenres(filmId);
-    }
+    }*/
 
 }

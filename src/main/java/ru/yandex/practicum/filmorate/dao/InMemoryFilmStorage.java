@@ -39,6 +39,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public boolean removeFilm(Film film) {
         filmMap.remove(film.getId());
+        return true;
     }
 
     @Override
