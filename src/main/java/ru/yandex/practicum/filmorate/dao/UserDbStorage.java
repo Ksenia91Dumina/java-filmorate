@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.dao;
 
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -37,22 +36,7 @@ public class UserDbStorage implements UserStorage {
     }
 
 
-    @Override
-    public User getUserById(ResultSet rs, int userId) throws SQLException {
-        final String sqlQuery = "select * from USERS where USER_ID = ?";
-        final List<User> users = jdbcTemplate.query(sqlQuery, UserDbStorage::makeUser, userId);
-        if (users.size() != 1) {
-            return null;
-        }
-        final List<Map<String, Object>> maps = jdbcTemplate.queryForList(sqlQuery);
-        final Object value = maps.get(0).values().iterator().next();
-        Integer value2 = jdbcTemplate.queryForObject(sqlQuery, Integer.class);
-        jdbcTemplate.queryForList(sqlQuery);
-        rs.getInt("USER_ID");
-        return users.get(0);
-    }
-
-    static User makeUser(ResultSet rs, int rowNum) throws SQLException {
+    public User makeUser(ResultSet rs, int rowNum) throws SQLException {
         return new User(rs.getInt("USER_ID"),
                 rs.getString("EMAIL"),
                 rs.getString("LOGIN"),
@@ -80,6 +64,27 @@ public class UserDbStorage implements UserStorage {
             return stmt;
         }, keyHolder);
         user.setId(keyHolder.getKey().intValue());
+        return user;
+    }
+
+    @Override
+    public User getUserById(int userId) throws SQLException {
+        final String sqlQuery = "select * from USERS where USER_ID = ?";
+        User user = jdbcTemplate.queryForObject(sqlQuery, this::makeUser, userId);
+        return user;
+    }
+
+    @Override
+    public User updateUser (User user){
+        String sqlQuery = "update USERS set " +
+                "EMAIL = ?, LOGIN = ?, USER_NAME = ?, BIRTHDAY = ?" +
+                "where USER_ID = ?";
+        jdbcTemplate.update(sqlQuery
+                , user.getEmail()
+                , user.getLogin()
+                , user.getName()
+                , user.getBirthday()
+                , user.getId());
         return user;
     }
 
@@ -114,51 +119,19 @@ public class UserDbStorage implements UserStorage {
         }
 
         @Override
-        public HashMap getFriends (int userId) throws SQLException {
+        public List getFriends (int userId) throws SQLException {
             final String sqlQuery = "select USER2_ID from USERS where USER1_ID = ?";
-            jdbcTemplate.update(connection -> {
-                PreparedStatement stmt = connection.prepareStatement(sqlQuery);
-                stmt.setInt(1, userId);
-                return stmt;
-            });
-            final List<User> users = jdbcTemplate.query(sqlQuery, UserDbStorage::makeUser, userId);
-            if (users.size() != 1) {
-                return null;
-            }
-            final List<Integer> friendsId = jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper(Integer.class));
-            HashMap<Integer, User> friends = new HashMap<>();
-            List<User> userMap = getUserMap();
-            for(Integer id : friendsId) {
-                for (User user : userMap) {
-                    if(user.getId() == id)
-                    friends.put(id, user);
-                }
-            }
-            return friends;
-
-
-            //совсем не моуг понять какой ход действий тут должен быть с поиском друзей((
-
+            List<Integer> userFriends = jdbcTemplate.queryForList(sqlQuery, Integer.class, userId);
+            return userFriends;
         }
+
 
         @Override
         public List getCommonFriends ( int userId, int otherId){
             return null;
         }
 
-        @Override
-        public User updateUser (User user){
-            String sqlQuery = "update USERS set " +
-                    "EMAIL = ?, LOGIN = ?, USER_NAME = ?, BIRTHDAY = ?" +
-                    "where USER_ID = ?";
-            jdbcTemplate.update(sqlQuery
-                    , user.getEmail()
-                    , user.getLogin()
-                    , user.getName()
-                    , user.getBirthday()
-                    , user.getId());
-            return user;
-        }
+
 
 
 }

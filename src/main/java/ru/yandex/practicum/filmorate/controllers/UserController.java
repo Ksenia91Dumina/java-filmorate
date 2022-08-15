@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.UserValidations;
 import ru.yandex.practicum.filmorate.service.UserService;
+
+import java.sql.SQLException;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -23,8 +25,12 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    User getUser(@PathVariable int userId) {
-        return userService.get(userId);
+    User getUser(@PathVariable int userId)  {
+        try {
+            return userService.get(userId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @PostMapping()
@@ -49,12 +55,20 @@ public class UserController {
 
     @PutMapping("/users/{userId}/friends/{friendId}")
     public void addFriend(@PathVariable int userId, @PathVariable int friendId) {
-        userService.addFriend(userId, friendId);
+        try {
+            userService.addFriend(userId, friendId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @DeleteMapping("/users/{userId}/friends/{friendId}")
     public void deleteFriend(@PathVariable int userId, @PathVariable int friendId) {
-        userService.deleteFriend(userId, friendId);
+        try {
+            userService.deleteFriend(userId, friendId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @GetMapping("/users/{userId}/friends")
@@ -64,7 +78,11 @@ public class UserController {
 
     @GetMapping("/users/{userId}/friends/common/{otherId}")
     public void getCommonFriends(@PathVariable int userId, @PathVariable int otherId) {
-        userService.getCommonFriends(userId, otherId);
+        try {
+            userService.getCommonFriends(userId, otherId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

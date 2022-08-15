@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.dao;
 
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -21,13 +20,12 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @NoArgsConstructor
 @Repository
 @Primary
-public class FilmDbStorage implements FilmStorage{
+public class FilmDbStorage implements FilmStorage {
 
     private JdbcTemplate jdbcTemplate;
 
@@ -35,6 +33,7 @@ public class FilmDbStorage implements FilmStorage{
     public FilmDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+
     @Override
     public List<Film> getFilmMap() {
         String sqlQuery = "select * from FILMS";
@@ -42,60 +41,15 @@ public class FilmDbStorage implements FilmStorage{
         return films;
     }
 
-    @Override
-    public Film get(int filmId) throws SQLException {
-        final String sqlQuery = "select * from FILMS JOIN RAITING_MPA ON () where FILM_ID = ?";
-        final List<Film> films = jdbcTemplate.query(sqlQuery, FilmDbStorage::makeFilm, filmId);
-        if (films.size() != 1) {
-            return null;
-        }
-        final List<Map<String, Object>> maps = jdbcTemplate.queryForList(sqlQuery);
-        final Object value = maps.get(0).values().iterator().next();
-        Integer value2 = jdbcTemplate.queryForObject(sqlQuery, Integer.class);
-        jdbcTemplate.queryForList(sqlQuery);
-        ResultSet rs = null;
-        rs.getInt("FILM_ID");
-        return films.get(0);
-    }
-
-
-
-    // с жанрами тут тоже ступор...
-    // Владимир на вебинаре рассказывал про два метода для нахождения жанров, но я не могу понять как реализовать
-    void loadFilmGenreSlow(List<Film> films){
-        for(Film film: films){
-            loadFilmGenre(film);
-        }
-    }
-
-    void loadFilmGenre(Film film){
-        final String sqlQuery = "SELECT NAME FROM FILM_GENRE WHERE FILM_ID = film.getId() ";
-        final List<Map<String, Object>> filmGenres = jdbcTemplate.queryForList(sqlQuery);
-    }
-
-    void loadAllFilmGenre(List<Film> films){
-        final List<Integer> ids = films.stream().map(f -> f.getId()).collect(Collectors.toList());
-        // SELECT FILM_ID, GENRES.* FROM GENRES WHERE FILM_ID = film.getId()
-        final Map<Integer, Film> filmMap = films.stream()
-                .collect(Collectors.toMap(Film::getId, film -> film, (a, b) -> b));
-        //filmMap.get(FILM_ID).addGenre(new Genre());
-    }
-
-    public void setFilmGenre(Film film){
-        int filmId = film.getId();
-        if(film.getGenres() == null || film.getGenres().isEmpty()){
-            return;
-        }
-        jdbcTemplate.update("delete from FILM_GENRE where FILM_ID = ?", filmId);
-        for(Genre genre : film.getGenres()){
-            String sqlQuery = "insert into FILM_GENRE (GENRE_ID, FILM_ID) values (?,?)";
-            jdbcTemplate.update(connection -> {
-                PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
-                preparedStatement.setInt(1, genre.getId());
-                preparedStatement.setInt(2, filmId);
-                return preparedStatement;
-            });
-        }
+    public Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
+        return new Film(rs.getInt("FILM_ID"),
+                rs.getString("NAME"),
+                rs.getString("DESCRIPTION"),
+                rs.getDate("RELEASE_DATE").toLocalDate(),
+                rs.getInt("DURATION"),
+                new MPA(rs.getInt("RAITING_MPA.MPA_ID"), rs.getString("RAITING_MPA.NAME")),
+                new HashSet<>(rs.getInt("GENRES.GENRE_ID"))
+        );
     }
 
     @Override
@@ -120,16 +74,6 @@ public class FilmDbStorage implements FilmStorage{
         return film;
     }
 
-    static Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
-        return new Film(rs.getInt("FILM_ID"),
-                rs.getString("NAME"),
-                rs.getString("DESCRIPTION"),
-                rs.getDate("RELEASE_DATE").toLocalDate(),
-                rs.getInt("DURATION"),
-                new MPA(rs.getInt("RAITING_MPA.MPA_ID"), rs.getString("RAITING_MPA.NAME")),
-                new HashSet<>(rs.getInt("GENRES.GENRE_ID"))
-        );
-    }
 
     @Override
     public boolean removeFilm(Film film) {
@@ -146,10 +90,42 @@ public class FilmDbStorage implements FilmStorage{
                 , film.getName()
                 , film.getDescription()
                 , film.getReleaseDate()
-                ,film.getDuration()
+                , film.getDuration()
                 , film.getMpa()
                 , film.getId());
         return film;
+    }
+
+    @Override
+    public Film get(int filmId) throws SQLException {
+        final String sqlQuery = "select * from FILMS " +
+                "join RAITING_MPA ON FILMS.MPA_ID = RAITING_MPA.MPA_ID " +
+                "where FILM_ID = ?";
+        Film film = jdbcTemplate.queryForObject(sqlQuery, this::makeFilm, filmId);
+        return film;
+    }
+
+    public List loadFilmGenre(Film film) {
+        final String sqlQuery = "SELECT GENRE_ID FROM FILM_GENRE WHERE FILM_ID = film.getId() ";
+        final List<Integer> filmGenres = jdbcTemplate.queryForList(sqlQuery, Integer.class, film.getId());
+        return filmGenres;
+    }
+
+    public void setFilmGenre(Film film) {
+        int filmId = film.getId();
+        if (film.getGenres() == null || film.getGenres().isEmpty()) {
+            return;
+        }
+        jdbcTemplate.update("delete from FILM_GENRE where FILM_ID = ?", filmId);
+        for (Genre genre : film.getGenres()) {
+            String sqlQuery = "insert into FILM_GENRE (GENRE_ID, FILM_ID) values (?,?)";
+            jdbcTemplate.update(connection -> {
+                PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
+                preparedStatement.setInt(1, genre.getId());
+                preparedStatement.setInt(2, filmId);
+                return preparedStatement;
+            });
+        }
     }
 
     @Override

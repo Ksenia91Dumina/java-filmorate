@@ -2,20 +2,20 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dao.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.dao.UserDbStorage;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.HashMap;
+import java.sql.SQLException;
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class UserService {
 
-    public InMemoryUserStorage userStorage = new InMemoryUserStorage();
+    public UserDbStorage userStorage = new UserDbStorage();
 
-    public User get(int userId) {
+    public User get(int userId) throws SQLException {
         final User user = userStorage.getUserById(userId);
         if (user == null) {
             throw new NotFoundException("Пользователь не найден");
@@ -35,7 +35,7 @@ public class UserService {
         return userStorage.updateUser(user);
     }
 
-    public void addFriend(int userId, int friendId) {
+    public void addFriend(int userId, int friendId) throws SQLException {
         final User user = userStorage.getUserById(userId);
         User friend = userStorage.getUserById(friendId);
         if (userStorage.getUserMap().contains(userId) && userStorage.getUserMap().contains(friendId)) {
@@ -43,21 +43,30 @@ public class UserService {
         }
     }
 
-    public void deleteFriend(int userId, int friendId) {
+    public void deleteFriend(int userId, int friendId) throws SQLException {
         final User user = userStorage.getUserById(userId);
         User friend = userStorage.getUserById(friendId);
         userStorage.deleteFriend(user, friend);
     }
 
-    public HashMap getFriends(int userId) {
-        final User user = userStorage.getUserById(userId);
+    public List getFriends(int userId) {
+        final User user;
+        try {
+            user = userStorage.getUserById(userId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         if (user == null) {
             throw new NotFoundException("Пользователь не найден");
         }
-        return userStorage.getFriends(userId);
+        try {
+            return userStorage.getFriends(userId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public List getCommonFriends(int userId, int otherId) {
+    public List getCommonFriends(int userId, int otherId) throws SQLException {
         final User user = userStorage.getUserById(userId);
         final User friend = userStorage.getUserById(otherId);
         if (user == null || friend == null) {
