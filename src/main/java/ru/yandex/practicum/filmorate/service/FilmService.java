@@ -1,74 +1,101 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dao.FilmDbStorage;
-import ru.yandex.practicum.filmorate.dao.UserDbStorage;
+import ru.yandex.practicum.filmorate.dao.GenresStorage;
+import ru.yandex.practicum.filmorate.dao.Impl.FilmDbStorage;
+import ru.yandex.practicum.filmorate.dao.Impl.MpaDbStorage;
+import ru.yandex.practicum.filmorate.dao.Impl.UserDbStorage;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 
-@RequiredArgsConstructor
 @Service
 public class FilmService {
+    private final FilmDbStorage filmStorage;
+    private final MpaDbStorage mpaStorage;
+    private final GenresStorage genresStorage;
+    private final UserDbStorage userStorage;
 
-    UserDbStorage userStorage;
-
-    FilmDbStorage filmStorage = new FilmDbStorage();
-
-    public List<Film> getAllFilms() {
-        return filmStorage.getFilmMap();
+    @Autowired
+    public FilmService(FilmDbStorage filmStorage, MpaDbStorage mpaStorage,
+                       GenresStorage genresStorage, UserDbStorage userStorage ) {
+        this.filmStorage = filmStorage;
+        this.mpaStorage = mpaStorage;
+        this.genresStorage = genresStorage;
+        this.userStorage = userStorage;
     }
 
-    public Film get(int filmId) throws SQLException {
-        final Film film;
+    public List<Film> getAllFilms() {
+        List<Film> films = filmStorage.getFilmMap();
+        for(Film film:films){
+            film.setGenres(genresStorage.getGenresByFilmId(film.getId()));
+        }
+        return films;
+    }
+
+    public Film get(int filmId)  {
+        Film film;
         try {
             film = filmStorage.get(filmId);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        if (film == null) {
+        } catch (EmptyResultDataAccessException e){
             throw new NotFoundException("Фильм не найден");
         }
-        return filmStorage.get(filmId);
+        int mpaId = film.getMpa().getId();
+        Mpa mpa = mpaStorage.getMpaById(mpaId);
+        List<Genre> genres = genresStorage.getGenresByFilmId(filmId);
+        film.setMpa(mpa);
+        film.setGenres(genres);
+        return film;
     }
 
     public Film save(Film film) {
-        return filmStorage.save(film);
+        Mpa mpa = mpaStorage.getMpaById(film.getMpa().getId());
+        film.setMpa(mpa);
+        setGenresForFilm(film.getId(), film.getGenres());
+        film = filmStorage.save(film);
+        return film;
+
     }
 
-    public void removeFilm(Film film) {
-        filmStorage.removeFilm(film);
+    public void removeFilm(int filmId) {
+        filmStorage.removeFilm(filmId);
     }
 
     public Film updateFilm(Film film) {
-        return filmStorage.updateFilm(film);
+        filmStorage.updateFilm(film);
+        genresStorage.deleteGenresForFilm(film.getId());
+        setGenresForFilm(film.getId(), film.getGenres());
+        filmStorage.updateFilm(film);
+        return film;
     }
 
     public void addLike(int userId, int filmId) throws SQLException {
-        User user = userStorage.getUserById(userId);
-        Film film = filmStorage.get(filmId);
-        if (userStorage.getUserMap().contains(userId) && filmStorage.getFilmMap().contains(filmId)) {
-            filmStorage.addLike(user, film);
-        }
+            filmStorage.addLike(userId, filmId);
     }
 
     public void deleteLike(int userId, int filmId) throws SQLException {
-        User user = userStorage.getUserById(userId);
-        Film film = filmStorage.get(filmId);
-        filmStorage.deleteLike(user, film);
+        filmStorage.deleteLike(userId, filmId);
     }
 
-    public void raitingFilm(int count) {
-        if (count == 0)
-            count = 10;
-        filmStorage.raitingFilm(count);
+    public List<Film> raitingFilm(int count) {
+        List<Film> films = filmStorage.raitingFilm(count);
+        for(Film film:films){
+            film.setGenres(genresStorage.getGenresByFilmId(film.getId()));
+        }
+        return films;
     }
 
-    public void setGenres(Film film){
-        filmStorage.setFilmGenre(film);
+    private boolean setGenresForFilm(int filmId, Collection<Genre> genres) {
+        if (genres == null || genres.size() == 0) {
+            return false;
+        }
+        return genresStorage.setGenresForFilm(filmId, genres);
     }
 }

@@ -1,7 +1,12 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.JdbcTemplate;
 import ru.yandex.practicum.filmorate.controllers.FilmController;
+import ru.yandex.practicum.filmorate.dao.Impl.FilmDbStorage;
+import ru.yandex.practicum.filmorate.dao.Impl.GenreDbStorage;
+import ru.yandex.practicum.filmorate.dao.Impl.MpaDbStorage;
+import ru.yandex.practicum.filmorate.dao.Impl.UserDbStorage;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -13,7 +18,9 @@ import java.util.Objects;
 public class FilmValidations {
 
     public static LocalDate earliestDate = LocalDate.of(1895, 12, 28);
-    public static FilmController fc = new FilmController(new FilmService());
+    public static FilmController fc = new FilmController(new FilmService(new FilmDbStorage(new JdbcTemplate()),
+            new MpaDbStorage(new JdbcTemplate()), new GenreDbStorage(new JdbcTemplate()),
+            new UserDbStorage(new JdbcTemplate())));
 
     public static void validateDescription(Film film) {
         if (film.getDescription().length() > 200) {

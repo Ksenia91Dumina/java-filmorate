@@ -2,6 +2,8 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.UserValidations;
@@ -10,7 +12,6 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import java.sql.SQLException;
 import java.util.List;
 
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("users")
 @Slf4j
@@ -19,6 +20,11 @@ public class UserController {
     private final UserService userService;
     private static int uniqueID = 1;
 
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
     @GetMapping()
     public List<User> getAllUsers() {
         return userService.getAllUsers();
@@ -26,11 +32,7 @@ public class UserController {
 
     @GetMapping("/{userId}")
     User getUser(@PathVariable int userId)  {
-        try {
-            return userService.get(userId);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        return userService.get(userId);
     }
 
     @PostMapping()
@@ -41,7 +43,6 @@ public class UserController {
         UserValidations.validateLogin(user);
         UserValidations.validateEmail(user);
         userService.save(user);
-        log.info("Создан пользователь " + user.getLogin());
         return user;
     }
 
@@ -49,11 +50,10 @@ public class UserController {
     public User updateUser(@RequestBody User user) {
         UserValidations.validateForUpdateUser(user);
         userService.updateUser(user);
-        log.info("Изменен пользователь " + user.getLogin());
         return user;
     }
 
-    @PutMapping("/users/{userId}/friends/{friendId}")
+    @PutMapping("/{userId}/friends/{friendId}")
     public void addFriend(@PathVariable int userId, @PathVariable int friendId) {
         try {
             userService.addFriend(userId, friendId);
@@ -62,7 +62,7 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/users/{userId}/friends/{friendId}")
+    @DeleteMapping("/{userId}/friends/{friendId}")
     public void deleteFriend(@PathVariable int userId, @PathVariable int friendId) {
         try {
             userService.deleteFriend(userId, friendId);
@@ -71,7 +71,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/users/{userId}/friends")
+    @GetMapping("/{userId}/friends")
     public void getFriends(@PathVariable int userId) {
         userService.getFriends(userId);
     }
@@ -84,6 +84,7 @@ public class UserController {
             throw new RuntimeException(e);
         }
     }
+
 
 
 }

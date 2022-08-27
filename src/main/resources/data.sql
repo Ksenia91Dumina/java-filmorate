@@ -1,23 +1,14 @@
-merge into RAITING_MPA (MPA_ID, NAME)
-values (1, 'G');
-merge into RAITING_MPA (MPA_ID, NAME)
-    values (2, 'PG');
-merge into RAITING_MPA (MPA_ID, NAME)
-    values (3, 'PG-13');
-merge into RAITING_MPA (MPA_ID, NAME)
-    values (4, 'R');
-merge into RAITING_MPA (MPA_ID, NAME)
-    values (5, 'NC-17');
+MERGE INTO PUBLIC.MPA (MPA_ID, NAME) VALUES (1, 'G');
+MERGE INTO PUBLIC.MPA (MPA_ID, NAME) VALUES (2, 'PG');
+MERGE INTO PUBLIC.MPA (MPA_ID, NAME) VALUES (3, 'PG-13');
+MERGE INTO PUBLIC.MPA (MPA_ID, NAME) VALUES (4, 'R');
+MERGE INTO PUBLIC.MPA (MPA_ID, NAME) VALUES (5, 'NC-17');
 
-merge into GENRE (GENRE_ID, NAME)
-    values (1, 'Комедия');
-merge into GENRE (GENRE_ID, NAME)
-    values (2, 'Драма');
-merge into GENRE (GENRE_ID, NAME)
-    values (3, 'Мультфильм');
-merge into GENRE (GENRE_ID, NAME)
-    values (4, 'Триллер');
-merge into GENRE (GENRE_ID, NAME)
-    values (5, 'Документальный');
-merge into GENRE (GENRE_ID, NAME)
-    values (6, 'Боевик');
+MERGE INTO PUBLIC.GENRE (GENRE_ID, NAME) VALUES (1, 'Комедия');
+MERGE INTO PUBLIC.GENRE (GENRE_ID, NAME) VALUES (2, 'Драма');
+MERGE INTO PUBLIC.GENRE (GENRE_ID, NAME) VALUES (3, 'Мультфильм');
+MERGE INTO PUBLIC.GENRE (GENRE_ID, NAME) VALUES (4, 'Триллер');
+MERGE INTO PUBLIC.GENRE (GENRE_ID, NAME) VALUES (5, 'Документальный');
+MERGE INTO PUBLIC.GENRE (GENRE_ID, NAME) VALUES (6, 'Боевик');
+
+COMMIT;

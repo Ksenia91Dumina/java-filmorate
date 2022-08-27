@@ -1,7 +1,11 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import ru.yandex.practicum.filmorate.dao.Impl.FilmDbStorage;
+import ru.yandex.practicum.filmorate.dao.Impl.GenreDbStorage;
+import ru.yandex.practicum.filmorate.dao.Impl.MpaDbStorage;
+import ru.yandex.practicum.filmorate.dao.Impl.UserDbStorage;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmValidations;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -17,7 +21,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FilmValidationsTest {
 
-    public FilmController filmController = new FilmController(new FilmService());
+    public FilmController filmController = new FilmController(new FilmService(new FilmDbStorage(new JdbcTemplate()),
+            new MpaDbStorage(new JdbcTemplate()), new GenreDbStorage(new JdbcTemplate()), new UserDbStorage(new JdbcTemplate())));
 
 
     @Test
@@ -55,14 +60,14 @@ class FilmValidationsTest {
 
     @Test
     void validateForUpdateFilmTest() {
-        /*Film newFilm = new Film();
+        Film newFilm = new Film();
         newFilm.setId(1);
         newFilm.setName("New Film name");
         newFilm.setDescription("description of New Film");
         newFilm.setReleaseDate(LocalDate.of(2022, 06, 15));
         newFilm.setDuration(170);
         filmController.createFilm(newFilm);
-        filmController.removeFilm(newFilm);
-        assertThrows(ValidationException.class, () -> FilmValidations.validateForUpdateFilm(newFilm));*/
+        filmController.removeFilm(newFilm.getId());
+        assertThrows(ValidationException.class, () -> FilmValidations.validateForUpdateFilm(newFilm));
     }
 }

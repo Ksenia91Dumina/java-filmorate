@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmValidations;
@@ -11,13 +12,16 @@ import java.sql.SQLException;
 import java.util.List;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("films")
 
 @Slf4j
 public class FilmController {
     public final FilmService filmService;
     private int uniqueID = 1;
+    @Autowired
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
 
     @GetMapping()
     public List<Film> getAllFilms() {
@@ -37,7 +41,6 @@ public class FilmController {
         FilmValidations.validateDate(film);
         FilmValidations.validateDuration(film);
         filmService.save(film);
-        log.info("Создан фильм " + film.getName());
         return film;
     }
 
@@ -45,33 +48,27 @@ public class FilmController {
     public Film updateFilm(@RequestBody Film film) {
         FilmValidations.validateForUpdateFilm(film);
         filmService.updateFilm(film);
-        log.info("Изменен фильм " + film.getName());
         return film;
     }
 
-    public void removeFilm(Film film) {
-        filmService.removeFilm(film);
-        log.info("Фильм удален");
+    @DeleteMapping("/{id}")
+    public void removeFilm(int filmId) {
+        filmService.removeFilm(filmId);
     }
 
-    @PutMapping("films/{id}/like/{userId}")
+    @PutMapping("/{id}/like/{userId}")
     public void addLike(@RequestBody int id, @RequestBody int userId) throws SQLException {
         filmService.addLike(userId, id);
     }
 
-    @DeleteMapping("films/{id}/like/{userId}")
+    @DeleteMapping("/{id}/like/{userId}")
     public void deleteLike(@RequestBody int id, @RequestBody int userId) throws SQLException {
         filmService.deleteLike(userId, id);
     }
 
-    @GetMapping("films/popular?count={count}")
-    public void raitingFilm(@RequestBody int count) {
-        filmService.raitingFilm(count);
+    @GetMapping("/popular")
+    public List<Film> raitingFilm(@RequestParam(defaultValue = "10") int count) {
+        return filmService.raitingFilm(count);
     }
-
-    /*@GetMapping("/{genres}")
-    public void getGenres(@PathVariable int filmId) {
-        return filmService.getGenres(filmId);
-    }*/
 
 }

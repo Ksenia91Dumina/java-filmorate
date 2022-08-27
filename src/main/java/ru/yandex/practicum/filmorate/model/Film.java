@@ -3,18 +3,20 @@ package ru.yandex.practicum.filmorate.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Film {
 
     private int id;
@@ -27,9 +29,15 @@ public class Film {
     @Positive(message = "Продолжительность не может быть отрицательной")
     private int duration;
 
-    private MPA mpa;
+    @NotNull
+    private Mpa mpa;
 
-    public Film(int id, String name, String description, LocalDate releaseDate, int duration, MPA mpa, Set<Genre> genres) {
+    @JsonIgnore
+    private Set<Integer> userIds = new HashSet<Integer>();
+
+    private Set<Genre> genres = new LinkedHashSet<>();
+
+    public Film(int id, String name, String description, LocalDate releaseDate, int duration, Mpa mpa, Set<Genre> genres) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -47,9 +55,10 @@ public class Film {
         this.duration = duration;
     }
 
-    @JsonIgnore
-    private Set<Integer> userIds = new HashSet<Integer>();
 
-    private Set<Genre> genres;
+    public void setGenres(Collection<Genre> genres) {
+        this.genres.clear();
+        this.genres.addAll(genres);
+    }
 
 }

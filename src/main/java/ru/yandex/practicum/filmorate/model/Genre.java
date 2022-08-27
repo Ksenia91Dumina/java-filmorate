@@ -2,12 +2,16 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.*;
 
+import javax.validation.constraints.NotBlank;
+
 @Getter
 @Setter
-@RequiredArgsConstructor
+@AllArgsConstructor
 @ToString
+@Builder
 @EqualsAndHashCode(of = "id")
 public class Genre {
-    private final int id;
-    private final String name;
+    private int id;
+    @NotBlank
+    private String name;
 }

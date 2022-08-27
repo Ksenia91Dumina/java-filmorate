@@ -14,13 +14,13 @@ public interface FilmStorage {
 
     Film save(Film film);
 
-    boolean removeFilm(Film film);
+    void removeFilm(int filmId);
 
     Film updateFilm(Film film);
 
-    void addLike(User user, Film film);
+    void addLike(int userId, int filmId);
 
-    void deleteLike(User user, Film film);
+    void deleteLike(int userId, int filmId);
 
     List raitingFilm(int count);
 }
