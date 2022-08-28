@@ -1,6 +1,5 @@
-/*package ru.yandex.practicum.filmorate.dao.Impl;
+package ru.yandex.practicum.filmorate.dao.Impl;
 
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +76,7 @@ class UserDbStorageTest {
         user.setLogin("updateLogin");
         user.setName("UpdateName");
         userStorage.updateUser(user);
-        User userToCheck = userStorage.getUserById(4);
+        User userToCheck = userStorage.getUserById(user.getId());
         assertEquals("updateLogin", userToCheck.getLogin());
         assertEquals("UpdateName", userToCheck.getName());
     }
@@ -91,4 +90,4 @@ class UserDbStorageTest {
     }
 
 
-}*/
+}

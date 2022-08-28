@@ -19,7 +19,8 @@ public class FilmValidations {
 
     public static LocalDate earliestDate = LocalDate.of(1895, 12, 28);
     public static FilmController fc = new FilmController(new FilmService(new FilmDbStorage(new JdbcTemplate()),
-            new MpaDbStorage(new JdbcTemplate()), new GenreDbStorage(new JdbcTemplate()),
+            new MpaDbStorage(new JdbcTemplate()),
+            new GenreDbStorage(new JdbcTemplate(), new FilmDbStorage(new JdbcTemplate())),
             new UserDbStorage()));
 
     public static void validateDescription(Film film) {

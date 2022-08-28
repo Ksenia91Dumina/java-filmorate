@@ -58,7 +58,6 @@ public class FilmService {
     public Film save(Film film) {
         Mpa mpa = mpaStorage.getMpaById(film.getMpa().getId());
         film.setMpa(mpa);
-        setGenresForFilm(film.getId(), film.getGenres());
         film = filmStorage.save(film);
         return film;
 
@@ -71,7 +70,7 @@ public class FilmService {
     public Film updateFilm(Film film) {
         filmStorage.updateFilm(film);
         genresStorage.deleteGenresForFilm(film.getId());
-        setGenresForFilm(film.getId(), film.getGenres());
+        genresStorage.setGenresForFilm(film.getId());
         filmStorage.updateFilm(film);
         return film;
     }
@@ -92,10 +91,4 @@ public class FilmService {
         return films;
     }
 
-    private boolean setGenresForFilm(int filmId, Collection<Genre> genres) {
-        if (genres == null || genres.size() == 0) {
-            return false;
-        }
-        return genresStorage.setGenresForFilm(filmId, genres);
-    }
 }

@@ -22,7 +22,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class FilmValidationsTest {
 
     public FilmController filmController = new FilmController(new FilmService(new FilmDbStorage(new JdbcTemplate()),
-            new MpaDbStorage(new JdbcTemplate()), new GenreDbStorage(new JdbcTemplate()), new UserDbStorage()));
+            new MpaDbStorage(new JdbcTemplate()),
+            new GenreDbStorage(new JdbcTemplate(), new FilmDbStorage(new JdbcTemplate())), new UserDbStorage()));
 
 
     @Test

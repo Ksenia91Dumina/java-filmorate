@@ -31,12 +31,12 @@ import java.util.*;
 @Slf4j
 public class UserDbStorage implements UserStorage {
 
-    private JdbcTemplate jdbcTemplate = new JdbcTemplate();
+    private JdbcTemplate jdbcTemplate;
 
-    /*@Autowired
+    @Autowired
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-    }*/
+    }
 
     @Override
     public List<User> getAllUsers() {
@@ -73,7 +73,7 @@ public class UserDbStorage implements UserStorage {
             }
             return stmt;
         }, keyHolder);
-        user.setId(keyHolder.getKey().intValue());
+        user.setId(Objects.requireNonNull(keyHolder.getKey().intValue()));
         log.info("Добавлен пользователь с id = " + user.getId());
         return user;
     }

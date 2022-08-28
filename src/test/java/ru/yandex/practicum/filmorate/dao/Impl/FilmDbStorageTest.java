@@ -14,10 +14,16 @@ import java.util.*;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+
 class FilmDbStorageTest {
     private final FilmDbStorage filmStorage;
     private final GenreDbStorage genreStorage;
+
+    @Autowired
+    public FilmDbStorageTest(FilmDbStorage filmStorage, GenreDbStorage genreStorage) {
+        this.filmStorage = filmStorage;
+        this.genreStorage = genreStorage;
+    }
 
     @Test
     void saveAndGetTest() {
@@ -26,8 +32,8 @@ class FilmDbStorageTest {
         genres.add(new Genre(2, "Драма"));
         Film film = new Film(1,"New name", "New film description",
                 LocalDate.of(2022,8,27),180, new Mpa(1, "G"), genres);
-
-        genreStorage.setGenresForFilm(1, genres);
+        film.setGenres(genres);
+        genreStorage.setGenresForFilm(1);
         filmStorage.save(film);
         List<Film> films = filmStorage.getFilmMap();
         assertEquals(1, films.size());
@@ -52,7 +58,7 @@ class FilmDbStorageTest {
         film.setName("New name for second film");
         film.setDescription("New description for second film");
         filmStorage.updateFilm(film);
-        Film filmToCheck = filmStorage.get(2);
+        Film filmToCheck = filmStorage.get(film.getId());
         assertEquals("New name for second film", filmToCheck.getName());
         assertEquals("New description for second film",filmToCheck.getDescription());
     }

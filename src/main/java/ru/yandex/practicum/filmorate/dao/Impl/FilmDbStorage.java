@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.dao.Impl;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -25,14 +27,16 @@ import java.sql.Types;
 import java.time.LocalDate;
 import java.util.*;
 
-
+@RequiredArgsConstructor
 @Repository
 @Primary
+@Getter
+@Setter
 @Slf4j
 
 public class FilmDbStorage implements FilmStorage {
 
-    private final JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     public FilmDbStorage(JdbcTemplate jdbcTemplate) {
@@ -50,21 +54,19 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     public Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
-        return Film.builder()
-                .id(rs.getInt("film_id"))
-                .name(rs.getString("name"))
-                .description(rs.getString("description"))
-                .releaseDate(rs.getDate("release_date").toLocalDate())
-                .duration(rs.getInt("duration"))
-                .mpa(new Mpa(
-                        rs.getInt("mpa_id"),
-                        rs.getString("mpa_name")))
-                .build();
+        return new Film(
+                rs.getInt("film_id"),
+                rs.getString("name"),
+                rs.getString("description"),
+                rs.getDate("release_date").toLocalDate(),
+                rs.getInt("duration"),
+                new Mpa(rs.getInt("mpa_id"),
+                        rs.getString("mpa_name")));
     }
 
     @Override
     public Film save(Film film) {
-        String sqlQuery = "INSERT INTO FILMS (NAME, DESCRIPTION, RELEASE_DATE, DURATION) values (?, ?, ?, ?)";
+        String sqlQuery = "INSERT INTO FILMS (NAME, DESCRIPTION, RELEASE_DATE, DURATION, MPA_ID) values (?, ?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -78,9 +80,10 @@ public class FilmDbStorage implements FilmStorage {
                 stmt.setDate(3, Date.valueOf(release));
             }
             stmt.setInt(4, film.getDuration());
+            stmt.setInt(5, film.getMpa().getId());
             return stmt;
         }, keyHolder);
-        film.setId(keyHolder.getKey().intValue());
+        film.setId(Objects.requireNonNull(keyHolder.getKey().intValue()));
         log.info("Сохранен фильм с id = " + film.getId());
         return film;
     }
