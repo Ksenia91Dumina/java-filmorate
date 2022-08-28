@@ -15,16 +15,17 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
+
 public class UserService {
 
-    private UserDbStorage userStorage;
-    private FriendDbStorage friends;
+    private final UserDbStorage userStorage ;
+    private final FriendDbStorage friends;
 
-    @Autowired
+   /* @Autowired
     public UserService(UserDbStorage userStorage, FriendDbStorage friends ) {
         this.userStorage = userStorage;
         this.friends = friends;
-    }
+    }*/
 
 
     public User get(int userId) {

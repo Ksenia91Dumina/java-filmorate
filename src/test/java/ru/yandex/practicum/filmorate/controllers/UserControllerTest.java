@@ -1,7 +1,10 @@
-package ru.yandex.practicum.filmorate.controllers;
+/*package ru.yandex.practicum.filmorate.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.jdbc.core.JdbcTemplate;
+import ru.yandex.practicum.filmorate.dao.Impl.FriendDbStorage;
+import ru.yandex.practicum.filmorate.dao.Impl.UserDbStorage;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -12,7 +15,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 class UserControllerTest {
-    public UserController userController = new UserController(new UserService());
+    public UserController userController = new UserController(new UserService(new UserDbStorage(),
+            new FriendDbStorage(new JdbcTemplate())));
     public User user1 = new User();
     public User user2 = new User();
 
@@ -60,4 +64,4 @@ class UserControllerTest {
         assertEquals("New Name", user1.getName(), "Пользователь обновлен");
     }
 
-}
+}*/

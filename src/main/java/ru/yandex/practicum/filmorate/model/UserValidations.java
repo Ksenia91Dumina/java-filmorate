@@ -1,7 +1,10 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.JdbcTemplate;
 import ru.yandex.practicum.filmorate.controllers.UserController;
+import ru.yandex.practicum.filmorate.dao.Impl.FriendDbStorage;
+import ru.yandex.practicum.filmorate.dao.Impl.UserDbStorage;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -14,7 +17,8 @@ import java.util.regex.Pattern;
 @Slf4j
 public class UserValidations {
 
-    public static UserController userController = new UserController(new UserService());
+    public static UserController userController = new UserController(new UserService(new UserDbStorage(),
+            new FriendDbStorage(new JdbcTemplate())));
     private static Pattern pattern;
     private static Matcher matcher;
 

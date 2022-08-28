@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dao.Impl;
+/*package ru.yandex.practicum.filmorate.dao.Impl;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,9 +15,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+
 class UserDbStorageTest {
     private final UserDbStorage userStorage;
+
+    @Autowired
+    public UserDbStorageTest(UserDbStorage userStorage) {
+        this.userStorage = userStorage;
+    }
 
     @BeforeEach
     void init(){
@@ -86,4 +91,4 @@ class UserDbStorageTest {
     }
 
 
-}
+}*/

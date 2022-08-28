@@ -1,6 +1,9 @@
 package ru.yandex.practicum.filmorate.dao.Impl;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -20,18 +23,20 @@ import java.time.LocalDate;
 import java.util.*;
 
 
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Repository
 @Primary
+@Getter
+@Setter
 @Slf4j
 public class UserDbStorage implements UserStorage {
 
-    private JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate = new JdbcTemplate();
 
-    @Autowired
+    /*@Autowired
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-    }
+    }*/
 
     @Override
     public List<User> getAllUsers() {
@@ -42,18 +47,17 @@ public class UserDbStorage implements UserStorage {
 
 
     public User makeUser(ResultSet rs, int rowNum) throws SQLException {
-        return User.builder()
-                .id(rs.getInt("user_id"))
-                .email(rs.getString("email"))
-                .login(rs.getString("login"))
-                .name(rs.getString("name"))
-                .birthday(rs.getDate("birthday").toLocalDate())
-                .build();
+        return new User(
+                rs.getInt("user_id"),
+                rs.getString("email"),
+                rs.getString("login"),
+                rs.getString("name"),
+                rs.getDate("birthday").toLocalDate());
     }
 
     @Override
     public User save(User user) {
-        String sqlQuery = "insert into USERS (EMAIL, LOGIN, NAME, BIRTHDAY) values (?, ?, ?, ?)";
+        String sqlQuery = "INSERT INTO USERS (EMAIL, LOGIN, NAME, BIRTHDAY) values (?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -88,7 +92,7 @@ public class UserDbStorage implements UserStorage {
     public User updateUser(User user) {
         String sqlQuery = "update USERS set " +
                 "EMAIL = ?, LOGIN = ?, NAME = ?, BIRTHDAY = ?" +
-                "where USER_ID = ?";
+                "WHERE USER_ID = ?";
         jdbcTemplate.update(sqlQuery
                 , user.getEmail()
                 , user.getLogin()

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.dao.Impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -28,6 +29,7 @@ import java.util.*;
 @Repository
 @Primary
 @Slf4j
+
 public class FilmDbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
@@ -47,22 +49,22 @@ public class FilmDbStorage implements FilmStorage {
         return films;
     }
 
-    public Film makeFilm(ResultSet resultSet, int rowNum) throws SQLException {
+    public Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
         return Film.builder()
-                .id(resultSet.getInt("film_id"))
-                .name(resultSet.getString("name"))
-                .description(resultSet.getString("description"))
-                .releaseDate(resultSet.getDate("release_date").toLocalDate())
-                .duration(resultSet.getInt("duration"))
+                .id(rs.getInt("film_id"))
+                .name(rs.getString("name"))
+                .description(rs.getString("description"))
+                .releaseDate(rs.getDate("release_date").toLocalDate())
+                .duration(rs.getInt("duration"))
                 .mpa(new Mpa(
-                        resultSet.getInt("mpa_id"),
-                        resultSet.getString("mpa_name")))
+                        rs.getInt("mpa_id"),
+                        rs.getString("mpa_name")))
                 .build();
     }
 
     @Override
     public Film save(Film film) {
-        String sqlQuery = "insert into FILMS (NAME, DESCRIPTION, RELEASE_DATE, DURATION) values (?, ?, ?, ?)";
+        String sqlQuery = "INSERT INTO FILMS (NAME, DESCRIPTION, RELEASE_DATE, DURATION) values (?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {

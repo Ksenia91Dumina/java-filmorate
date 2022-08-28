@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dao.Impl;
+/*package ru.yandex.practicum.filmorate.dao.Impl;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
@@ -70,4 +70,4 @@ class FilmDbStorageTest {
         assertEquals(1, films.size());
     }
 
-}
+}*/
