@@ -17,8 +17,6 @@ import java.util.regex.Pattern;
 @Slf4j
 public class UserValidations {
 
-    public static UserController userController = new UserController(new UserService(new UserDbStorage(),
-            new FriendDbStorage(new JdbcTemplate())));
     private static Pattern pattern;
     private static Matcher matcher;
 
@@ -50,7 +48,7 @@ public class UserValidations {
         }
     }
 
-    public static void validateForUpdateUser(User user) {
+  /*  public static void validateForUpdateUser(User user) {
         Collection<User> users = userController.getAllUsers();
         if (!(users.isEmpty())) {
             if (!users.contains(user)) {
@@ -58,7 +56,7 @@ public class UserValidations {
                 throw new ValidationException("Пользователя не существует");
             }
         }
-    }
+    }*/
 
 }
 

@@ -12,7 +12,6 @@ public interface UserStorage {
 
     User save(User user);
 
-
     List getFriends(int userId) throws SQLException;
 
     List getCommonFriends(int userId, int otherId);

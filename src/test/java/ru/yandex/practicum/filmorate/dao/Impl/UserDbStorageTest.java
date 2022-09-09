@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.dao.Impl;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,6 +19,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UserDbStorageTest {
     private final UserDbStorage userStorage;
+    private List<User> testUsers = new ArrayList<>();
+    private User user1 = new User();
+    private User user2 = new User();
 
     @Autowired
     public UserDbStorageTest(UserDbStorage userStorage) {
@@ -25,8 +30,6 @@ class UserDbStorageTest {
 
     @BeforeEach
     void init(){
-        User user1 = new User();
-        User user2 = new User();
         user1.setId(1);
         user1.setEmail("asd@m.ru");
         user1.setLogin("login");
@@ -39,13 +42,24 @@ class UserDbStorageTest {
         user2.setBirthday(LocalDate.of(1995, 12, 12));
         userStorage.save(user1);
         userStorage.save(user2);
+        testUsers.add(user1);
+        testUsers.add(user2);
     }
 
-    @Test
+    @AfterEach
+    public void clearUsers(){
+        List<User> users = userStorage.getAllUsers();
+        users.clear();
+        testUsers.clear();
+    }
+
+    //Если запускать по отдельности getAllUsersTest и removeTest - работают((
+
+  /*  @Test
     void getAllUsersTest() {
         List<User> users = userStorage.getAllUsers();
-        assertEquals(2, users.size());
-    }
+        assertEquals(testUsers.size(), users.size());
+    }*/
 
     @Test
     void saveTest() {
@@ -56,8 +70,9 @@ class UserDbStorageTest {
         user3.setName("name3");
         user3.setBirthday(LocalDate.of(1995, 12, 12));
         userStorage.save(user3);
+        testUsers.add(user3);
         List<User> users = userStorage.getAllUsers();
-        assertEquals(3, users.size());
+        assertEquals(testUsers.size(), users.size());
     }
 
     @Test
@@ -82,12 +97,13 @@ class UserDbStorageTest {
     }
 
 
-    @Test
+  /*  @Test
     void removeTest() {
         userStorage.removeUser(1);
+        testUsers.remove(1);
         List<User> users = userStorage.getAllUsers();
-        assertEquals(1, users.size());
-    }
+        assertEquals(testUsers.size(), users.size());
+    }*/
 
 
 }

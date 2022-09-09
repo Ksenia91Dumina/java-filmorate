@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.dao.Impl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,7 @@ import ru.yandex.practicum.filmorate.exception.LikesException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -27,7 +27,6 @@ import java.sql.Types;
 import java.time.LocalDate;
 import java.util.*;
 
-@RequiredArgsConstructor
 @Repository
 @Primary
 @Getter
@@ -36,7 +35,7 @@ import java.util.*;
 
 public class FilmDbStorage implements FilmStorage {
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public FilmDbStorage(JdbcTemplate jdbcTemplate) {
@@ -102,9 +101,9 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film updateFilm(Film film) {
-        String sqlQuery = "update FILMS set " +
+        String sqlQuery = "UPDATE FILMS SET " +
                 "NAME = ?, DESCRIPTION = ?, RELEASE_DATE = ?, DURATION = ?, MPA_ID = ?" +
-                "where FILM_ID = ?";
+                "WHERE FILM_ID = ?";
         jdbcTemplate.update(sqlQuery
                 , film.getName()
                 , film.getDescription()
@@ -117,16 +116,20 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film get(int filmId) {
-        final String sqlQuery = "f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, " +
+        Film film = new Film();
+        final String sqlQuery = "SELECT f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, " +
                 "f.MPA_ID, m.NAME AS MPA_NAME " +
                 "FROM FILMS f" +
                 "JOIN MPA ON FILMS.MPA_ID = MPA.MPA_ID " +
-                "where FILM_ID = ?";
+                "WHERE FILM_ID = ?";
         try {
-            return jdbcTemplate.queryForObject(sqlQuery, this::makeFilm, filmId);
+            List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilm, filmId);
+            film = films.get(0);
+            //return jdbcTemplate.queryForObject(sqlQuery, this::makeFilm, filmId);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Фильм не найден");
         }
+        return film;
     }
 
     @Override
@@ -152,7 +155,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List raitingFilm(int count) {
+    public List<Film> raitingFilm(int count) {
         String sql = "SELECT * FROM FILMS " +
                 "LEFT JOIN USERS_LIKES ON FILMS.FILM_ID = USERS_LIKES.FILM_ID " +
                 "GROUP BY FILMS.FILM_ID " +

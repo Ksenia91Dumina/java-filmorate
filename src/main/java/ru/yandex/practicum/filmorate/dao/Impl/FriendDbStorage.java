@@ -22,7 +22,6 @@ public class FriendDbStorage implements FriendStorage {
     @Override
     public void addFriend(int userId, int friendId) {
         String sqlQuery = "INSERT INTO FRIENDSHIP (USER_ID, FRIEND_ID) VALUES (?, ?)";
-
         try {
             jdbcTemplate.update(sqlQuery, userId, friendId);
             log.info("Добавлен друг с id = " + friendId);
@@ -40,11 +39,12 @@ public class FriendDbStorage implements FriendStorage {
     @Override
     public void deleteFriend(int userId, int friendId) {
         String sqlQuery = "DELETE FROM FRIENDSHIP WHERE USER_ID = ? AND FRIEND_ID = ?";
-
-        int updatedRowsCount = jdbcTemplate.update(sqlQuery, userId, friendId);
-        if (updatedRowsCount > 0) {
-            log.info("Удален друг с id = " + friendId);
-        } else {
+        try {
+            int updatedRowsCount = jdbcTemplate.update(sqlQuery, userId, friendId);
+            if (updatedRowsCount > 0) {
+                log.info("Удален друг с id = " + friendId);
+            }
+        } catch (Exception e) {
             throw new NotFoundException("Пользователь не найден");
         }
     }

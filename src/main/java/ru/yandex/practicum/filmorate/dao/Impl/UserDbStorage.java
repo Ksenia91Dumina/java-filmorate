@@ -1,8 +1,6 @@
 package ru.yandex.practicum.filmorate.dao.Impl;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +20,6 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.*;
 
-
-@RequiredArgsConstructor
 @Repository
 @Primary
 @Getter
@@ -31,7 +27,7 @@ import java.util.*;
 @Slf4j
 public class UserDbStorage implements UserStorage {
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
@@ -41,7 +37,7 @@ public class UserDbStorage implements UserStorage {
     @Override
     public List<User> getAllUsers() {
         String sqlQuery = "select * from USERS";
-        List users = jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper(User.class));
+        List<User> users = jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper(User.class));
         return users;
     }
 
@@ -80,17 +76,21 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User getUserById(int userId) {
+        User user = new User();
         final String sqlQuery = "SELECT * FROM USERS WHERE USER_ID = ?";
         try {
-            return jdbcTemplate.queryForObject(sqlQuery, this::makeUser, userId);
+            List<User> users = jdbcTemplate.query(sqlQuery, this::makeUser, userId);
+            user = users.get(0);
+            //return jdbcTemplate.queryForObject(sqlQuery, this::makeUser, userId);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Пользователь не найден");
         }
+        return user;
     }
 
     @Override
     public User updateUser(User user) {
-        String sqlQuery = "update USERS set " +
+        String sqlQuery = "UPDATE USERS SET " +
                 "EMAIL = ?, LOGIN = ?, NAME = ?, BIRTHDAY = ?" +
                 "WHERE USER_ID = ?";
         jdbcTemplate.update(sqlQuery

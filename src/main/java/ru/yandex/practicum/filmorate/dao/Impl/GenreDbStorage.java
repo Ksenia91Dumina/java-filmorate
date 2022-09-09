@@ -16,7 +16,6 @@ import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -35,13 +34,6 @@ public class GenreDbStorage implements GenresStorage {
         this.filmDbStorage = filmDbStorage;
     }
 
-    /*@Override
-    public boolean setGenresForFilm(int filmId, Collection<Genre> genres) {
-        String sqlQuery = "INSERT INTO FILM_GENRE(film_id, genre_id) VALUES (?, ?)";
-        genres.forEach(genre -> jdbcTemplate.update(sqlQuery, filmId, genre.getId()));
-        return true;
-    }*/
-
     @Override
     public void setGenresForFilm(int filmId) {
         String sqlQuery = "INSERT INTO FILM_GENRE(film_id, genre_id)  VALUES (?,?)";
@@ -54,7 +46,7 @@ public class GenreDbStorage implements GenresStorage {
     }
 
 
-        @Override
+    @Override
     public List<Genre> getGenresByFilmId(int filmId) {
         String sqlQuery = "SELECT DISTINCT g.GENRE_ID, g.NAME FROM GENRE AS g" +
                 " INNER JOIN FILM_GENRE AS fg ON g.GENRE_ID = fg.GENRE_ID" +

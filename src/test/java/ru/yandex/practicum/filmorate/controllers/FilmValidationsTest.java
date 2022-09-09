@@ -21,11 +21,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FilmValidationsTest {
 
-    public FilmController filmController = new FilmController(new FilmService(new FilmDbStorage(new JdbcTemplate()),
-            new MpaDbStorage(new JdbcTemplate()),
-            new GenreDbStorage(new JdbcTemplate(), new FilmDbStorage(new JdbcTemplate())), new UserDbStorage()));
-
-
     @Test
     void validateDescriptionTest() throws IOException {
         Film film = new Film();
@@ -59,16 +54,4 @@ class FilmValidationsTest {
         assertThrows(ValidationException.class, () -> FilmValidations.validateDuration(newFilm));
     }
 
-    /*@Test
-    void validateForUpdateFilmTest() {
-        Film newFilm = new Film();
-        newFilm.setId(1);
-        newFilm.setName("New Film name");
-        newFilm.setDescription("description of New Film");
-        newFilm.setReleaseDate(LocalDate.of(2022, 06, 15));
-        newFilm.setDuration(170);
-        filmController.createFilm(newFilm);
-        filmController.removeFilm(newFilm.getId());
-        assertThrows(ValidationException.class, () -> FilmValidations.validateForUpdateFilm(newFilm));
-    }*/
 }

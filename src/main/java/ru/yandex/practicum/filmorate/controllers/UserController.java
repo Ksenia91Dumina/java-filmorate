@@ -1,9 +1,7 @@
 package ru.yandex.practicum.filmorate.controllers;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.UserValidations;
@@ -31,7 +29,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    User getUser(@PathVariable int userId)  {
+    public User getUser(@PathVariable int userId) {
         return userService.get(userId);
     }
 
@@ -48,27 +46,18 @@ public class UserController {
 
     @PutMapping()
     public User updateUser(@RequestBody User user) {
-        UserValidations.validateForUpdateUser(user);
         userService.updateUser(user);
         return user;
     }
 
     @PutMapping("/{userId}/friends/{friendId}")
     public void addFriend(@PathVariable int userId, @PathVariable int friendId) {
-        try {
-            userService.addFriend(userId, friendId);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        userService.addFriend(userId, friendId);
     }
 
     @DeleteMapping("/{userId}/friends/{friendId}")
     public void deleteFriend(@PathVariable int userId, @PathVariable int friendId) {
-        try {
-            userService.deleteFriend(userId, friendId);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        userService.deleteFriend(userId, friendId);
     }
 
     @GetMapping("/{userId}/friends")
@@ -84,7 +73,6 @@ public class UserController {
             throw new RuntimeException(e);
         }
     }
-
 
 
 }

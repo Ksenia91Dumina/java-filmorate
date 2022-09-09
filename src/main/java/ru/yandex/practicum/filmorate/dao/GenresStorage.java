@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.List;
 
 public interface GenresStorage {
-   // boolean setGenresForFilm(int filmId, Collection<Genre> genres);
     void setGenresForFilm(int filmId);
     List<Genre> getGenresByFilmId(int filmId);
 
