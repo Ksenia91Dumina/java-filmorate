@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.dao.Impl;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,7 @@ public class MpaDbStorage implements MpaStorage {
     }
 
     private Mpa makeMpa(ResultSet rs, int rowNum) throws SQLException {
-        return new Mpa(rs.getInt("mpa_id"),
-                rs.getString("name"));
+        return new Mpa(rs.getInt("mpa.mpa_id"),
+                rs.getString("mpa.name"));
     }
 }

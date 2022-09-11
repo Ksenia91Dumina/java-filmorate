@@ -1,16 +1,9 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.jdbc.core.JdbcTemplate;
-import ru.yandex.practicum.filmorate.controllers.UserController;
-import ru.yandex.practicum.filmorate.dao.Impl.FriendDbStorage;
-import ru.yandex.practicum.filmorate.dao.Impl.UserDbStorage;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,15 +41,6 @@ public class UserValidations {
         }
     }
 
-  /*  public static void validateForUpdateUser(User user) {
-        Collection<User> users = userController.getAllUsers();
-        if (!(users.isEmpty())) {
-            if (!users.contains(user)) {
-                log.info("Пользователя не существует");
-                throw new ValidationException("Пользователя не существует");
-            }
-        }
-    }*/
 
 }
 

@@ -35,7 +35,7 @@ public class FilmController {
 
     @PostMapping()
     public Film createFilm(@RequestBody Film film) {
-        film.setId(++uniqueID);
+
         FilmValidations.validateName(film);
         FilmValidations.validateDescription(film);
         FilmValidations.validateDate(film);
@@ -46,8 +46,7 @@ public class FilmController {
 
     @PutMapping()
     public Film updateFilm(@RequestBody Film film) {
-        filmService.updateFilm(film);
-        return film;
+        return filmService.updateFilm(film);
     }
 
     @DeleteMapping("/{id}")

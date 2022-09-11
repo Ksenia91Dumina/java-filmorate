@@ -74,7 +74,6 @@ public class FilmService {
                 log.info("Фильма не существует");
                 throw new NotFoundException("Фильм с id " + film.getId() + "не найден");
             }
-            filmStorage.updateFilm(film);
             genresStorage.deleteGenresForFilm(film.getId());
             genresStorage.setGenresForFilm(film.getId());
             filmStorage.updateFilm(film);

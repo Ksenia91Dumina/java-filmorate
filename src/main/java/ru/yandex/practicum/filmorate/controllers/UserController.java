@@ -35,7 +35,7 @@ public class UserController {
 
     @PostMapping()
     public User createUser(@RequestBody User user) {
-        user.setId(++uniqueID);
+
         UserValidations.validateBirthday(user);
         UserValidations.validateName(user);
         UserValidations.validateLogin(user);
@@ -46,8 +46,7 @@ public class UserController {
 
     @PutMapping()
     public User updateUser(@RequestBody User user) {
-        userService.updateUser(user);
-        return user;
+       return userService.updateUser(user);
     }
 
     @PutMapping("/{userId}/friends/{friendId}")

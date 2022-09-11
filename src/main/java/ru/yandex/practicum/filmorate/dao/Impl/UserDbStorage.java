@@ -36,8 +36,8 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> getAllUsers() {
-        String sqlQuery = "select * from USERS";
-        List<User> users = jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper(User.class));
+        String sqlQuery = "SELECT USER_ID, EMAIL, LOGIN, NAME, BIRTHDAY FROM USERS";
+        List<User> users = jdbcTemplate.query(sqlQuery, this::makeUser);
         return users;
     }
 
@@ -53,7 +53,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User save(User user) {
-        String sqlQuery = "INSERT INTO USERS (EMAIL, LOGIN, NAME, BIRTHDAY) values (?, ?, ?, ?)";
+        String sqlQuery = "INSERT INTO USERS (EMAIL, LOGIN, NAME, BIRTHDAY) VALUES (?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -81,17 +81,16 @@ public class UserDbStorage implements UserStorage {
         try {
             List<User> users = jdbcTemplate.query(sqlQuery, this::makeUser, userId);
             user = users.get(0);
-            //return jdbcTemplate.queryForObject(sqlQuery, this::makeUser, userId);
+            return user;
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Пользователь не найден");
         }
-        return user;
     }
 
     @Override
     public User updateUser(User user) {
         String sqlQuery = "UPDATE USERS SET " +
-                "EMAIL = ?, LOGIN = ?, NAME = ?, BIRTHDAY = ?" +
+                "EMAIL = ?, LOGIN = ?, NAME = ?, BIRTHDAY = ? " +
                 "WHERE USER_ID = ?";
         jdbcTemplate.update(sqlQuery
                 , user.getEmail()
@@ -101,6 +100,7 @@ public class UserDbStorage implements UserStorage {
                 , user.getId());
         return user;
     }
+
 
     @Override
     public List getFriends(int userId) throws SQLException {

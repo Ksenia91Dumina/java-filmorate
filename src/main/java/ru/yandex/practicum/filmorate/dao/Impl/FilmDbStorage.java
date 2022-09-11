@@ -17,7 +17,6 @@ import ru.yandex.practicum.filmorate.exception.LikesException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -48,7 +47,7 @@ public class FilmDbStorage implements FilmStorage {
                 "f.MPA_ID, m.NAME AS MPA_NAME " +
                 "FROM FILMS f " +
                 "JOIN MPA m on f.MPA_ID = m.MPA_ID";
-        List films = jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper(Film.class));
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilm);
         return films;
     }
 
@@ -65,7 +64,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film save(Film film) {
-        String sqlQuery = "INSERT INTO FILMS (NAME, DESCRIPTION, RELEASE_DATE, DURATION, MPA_ID) values (?, ?, ?, ?, ?)";
+        String sqlQuery = "INSERT INTO FILMS (NAME, DESCRIPTION, RELEASE_DATE, DURATION, MPA_ID) VALUES (?, ?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -90,7 +89,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public void removeFilm(int filmId) {
-        String sqlQuery = "DELETE FROM FILMS where FILM_ID = ?";
+        String sqlQuery = "DELETE FROM FILMS WHERE FILM_ID = ?";
         int result = jdbcTemplate.update(sqlQuery, filmId);
         if (result > 0) {
             log.info("Удален фильм с id = " + filmId);
@@ -102,9 +101,9 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film updateFilm(Film film) {
         String sqlQuery = "UPDATE FILMS SET " +
-                "NAME = ?, DESCRIPTION = ?, RELEASE_DATE = ?, DURATION = ?, MPA_ID = ?" +
+                "NAME = ?, DESCRIPTION = ?, RELEASE_DATE = ?, DURATION = ?, MPA_ID = ? " +
                 "WHERE FILM_ID = ?";
-        jdbcTemplate.update(sqlQuery
+         jdbcTemplate.update(sqlQuery
                 , film.getName()
                 , film.getDescription()
                 , film.getReleaseDate()
@@ -118,18 +117,18 @@ public class FilmDbStorage implements FilmStorage {
     public Film get(int filmId) {
         Film film = new Film();
         final String sqlQuery = "SELECT f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, " +
-                "f.MPA_ID, m.NAME AS MPA_NAME " +
-                "FROM FILMS f" +
-                "JOIN MPA ON FILMS.MPA_ID = MPA.MPA_ID " +
+                "f.MPA_ID, MPA.NAME AS MPA_NAME " +
+                "FROM FILMS f " +
+                "LEFT JOIN MPA ON MPA.MPA_ID = f.MPA_ID " +
                 "WHERE FILM_ID = ?";
         try {
             List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilm, filmId);
             film = films.get(0);
-            //return jdbcTemplate.queryForObject(sqlQuery, this::makeFilm, filmId);
+            return film;
+           // return jdbcTemplate.queryForObject(sqlQuery, this::makeFilm, filmId);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Фильм не найден");
         }
-        return film;
     }
 
     @Override
@@ -139,6 +138,7 @@ public class FilmDbStorage implements FilmStorage {
             jdbcTemplate.update(sqlQuery, userId, filmId);
             log.info("Добавлен лайк от пользователя с id = ", userId);
         } catch (DataAccessException e) {
+            log.info("Невозможно добавить лайк для фильма с id = ", userId);
             throw new LikesException("Невозможно добавить лайк");
         }
     }

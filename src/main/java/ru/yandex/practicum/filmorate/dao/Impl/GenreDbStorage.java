@@ -45,23 +45,29 @@ public class GenreDbStorage implements GenresStorage {
         }
     }
 
-
     @Override
     public List<Genre> getGenresByFilmId(int filmId) {
         String sqlQuery = "SELECT DISTINCT g.GENRE_ID, g.NAME FROM GENRE AS g" +
                 " INNER JOIN FILM_GENRE AS fg ON g.GENRE_ID = fg.GENRE_ID" +
                 " WHERE FILM_ID = ? ORDER BY GENRE_ID";
-        return jdbcTemplate.query(sqlQuery, this::makeGenre, filmId);
+        try {
+            return jdbcTemplate.query(sqlQuery, this::makeGenre, filmId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("Для фильма с id = " + filmId + " cписок жанров не найден");
+        }
     }
 
     @Override
     public void deleteGenresForFilm(int filmId) {
         String sqlQuery = "DELETE FROM FILM_GENRE WHERE FILM_ID = ?";
-        int updatedRows = jdbcTemplate.update(sqlQuery, filmId);
-        if (updatedRows > 0) {
-            log.info("Жанры удалены");
-        } else {
+        try {
+            int updatedRows = jdbcTemplate.update(sqlQuery, filmId);
+            if (updatedRows > 0) {
+                log.info("Жанры удалены");
+            }
+        } catch (EmptyResultDataAccessException e) {
             log.info("Невозможно удалить жанры - список пуст");
+            throw new NotFoundException("Для фильма с id = " + filmId + " cписок жанров не найден");
         }
     }
 

@@ -55,11 +55,11 @@ class UserDbStorageTest {
 
     //Если запускать по отдельности getAllUsersTest и removeTest - работают((
 
-  /*  @Test
+   @Test
     void getAllUsersTest() {
         List<User> users = userStorage.getAllUsers();
         assertEquals(testUsers.size(), users.size());
-    }*/
+    }
 
     @Test
     void saveTest() {
@@ -97,13 +97,13 @@ class UserDbStorageTest {
     }
 
 
-  /*  @Test
+   @Test
     void removeTest() {
         userStorage.removeUser(1);
         testUsers.remove(1);
         List<User> users = userStorage.getAllUsers();
         assertEquals(testUsers.size(), users.size());
-    }*/
+    }
 
 
 }

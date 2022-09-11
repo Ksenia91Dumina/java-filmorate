@@ -53,11 +53,11 @@ class FilmDbStorageTest {
 
     //если отдельно запускать getFilmMapTest и removeTest - проходят
 
-    /*@Test
+    @Test
     void getFilmMapTest() {
         List<Film> films = filmStorage.getFilmMap();
         assertEquals(2, films.size());
-    }*/
+    }
 
     @Test
     void saveTest() {
@@ -72,28 +72,12 @@ class FilmDbStorageTest {
         assertEquals(3, films.size());
     }
 
-//по update - вроде все также как с user, но тут что-то не работает(
-   /* @Test
-    void updateTest() {
-        Set<Genre> genres = new HashSet<>();
-        genres.add(new Genre(1, "Комедия"));
-        genres.add(new Genre(6, "Боевик"));
-        Film film = new Film(4, "Second film", "Second film description",
-                LocalDate.of(2020, 12, 12), 200, new Mpa(2, "PG"), genres);
-        filmStorage.save(film);
-        film.setName("New name for second film");
-        film.setDescription("New description for second film");
-        filmStorage.updateFilm(film);
-        Film filmToCheck = filmStorage.get(film.getId());
-        assertEquals("New name for second film", filmToCheck.getName());
-        assertEquals("New description for second film", filmToCheck.getDescription());
-    }*/
 
-   /* @Test
+    @Test
     void removeTest() {
         filmStorage.removeFilm(1);
         List<Film> films = filmStorage.getFilmMap();
         assertEquals(1, films.size());
-    }*/
+    }
 
 }
