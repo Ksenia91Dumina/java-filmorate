@@ -113,10 +113,10 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> getCommonFriends(int userId, int otherId) {
-        String sql = "SELECT u.* FROM USERS u " +
+        String sql = "SELECT USERS.* FROM USERS u " +
                 "INNER JOIN FRIENDSHIP f ON u.USER_ID = f.FRIEND_ID " +
                 "WHERE f.USER_ID = ? " +
-                "AND FRIEND_ID IN (" +
+                "AND f.FRIEND_ID IN (" +
                 "    SELECT FRIEND_ID " +
                 "    FROM FRIENDSHIP f " +
                 "    WHERE f.USER_ID = ?)";

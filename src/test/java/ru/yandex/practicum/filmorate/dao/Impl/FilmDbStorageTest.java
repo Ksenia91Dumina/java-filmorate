@@ -26,7 +26,7 @@ class FilmDbStorageTest {
         this.genreStorage = genreStorage;
     }
 
-   /* @BeforeEach
+   /*@BeforeEach
     void init() {
         Set<Genre> genres = new HashSet<>();
         genres.add(new Genre(4, "Триллер"));
