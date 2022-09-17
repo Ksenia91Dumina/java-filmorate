@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 
-
 import java.time.LocalDate;
 
 
@@ -29,7 +28,6 @@ public class FilmValidations {
             throw new ValidationException("Дата релиза не может быть раньше 28.12.1895");
         }
     }
-
 
     public static void validateDuration(Film film) {
         if (film.getDuration() <= 0) {

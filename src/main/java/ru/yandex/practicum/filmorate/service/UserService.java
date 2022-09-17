@@ -82,7 +82,6 @@ public class UserService {
         }
     }
 
-
     public List getCommonFriends(int userId, int otherId) {
         try {
             if (userId == otherId) {
