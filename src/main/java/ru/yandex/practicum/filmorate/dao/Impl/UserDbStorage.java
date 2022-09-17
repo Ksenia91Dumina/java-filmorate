@@ -1,60 +1,55 @@
 package ru.yandex.practicum.filmorate.dao.Impl;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dao.UserStorage;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.sql.*;
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
 
-@Repository
-@Primary
-@Getter
-@Setter
+
 @Slf4j
+@Component("UserDbStorage")
+@Primary
+@RequiredArgsConstructor
+
 public class UserDbStorage implements UserStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    public UserDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    private User makeUser(ResultSet resultSet, int rowNum) throws SQLException {
+        return User.builder()
+                .id(resultSet.getInt("user_id"))
+                .email(resultSet.getString("email"))
+                .login(resultSet.getString("login"))
+                .name(resultSet.getString("name"))
+                .birthday(resultSet.getDate("birthday").toLocalDate())
+                .build();
     }
 
     @Override
     public List<User> getAllUsers() {
-        String sqlQuery = "SELECT USER_ID, EMAIL, LOGIN, NAME, BIRTHDAY FROM USERS";
+        String sqlQuery = "SELECT * FROM USERS";
         List<User> users = jdbcTemplate.query(sqlQuery, this::makeUser);
         return users;
-    }
-
-
-    public User makeUser(ResultSet rs, int rowNum) throws SQLException {
-        return new User(
-                rs.getInt("user_id"),
-                rs.getString("email"),
-                rs.getString("login"),
-                rs.getString("name"),
-                rs.getDate("birthday").toLocalDate());
     }
 
     @Override
     public User save(User user) {
         String sqlQuery = "INSERT INTO USERS (EMAIL, LOGIN, NAME, BIRTHDAY) VALUES (?, ?, ?, ?)";
-
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"USER_ID"});
@@ -69,22 +64,15 @@ public class UserDbStorage implements UserStorage {
             }
             return stmt;
         }, keyHolder);
-        user.setId(Objects.requireNonNull(keyHolder.getKey().intValue()));
+        user.setId(keyHolder.getKey().intValue());
         log.info("Добавлен пользователь с id = " + user.getId());
         return user;
     }
 
     @Override
     public User getUserById(int userId) {
-        User user = new User();
-        final String sqlQuery = "SELECT * FROM USERS WHERE USER_ID = ?";
-        try {
-            List<User> users = jdbcTemplate.query(sqlQuery, this::makeUser, userId);
-            user = users.get(0);
-            return user;
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Пользователь не найден");
-        }
+        String sqlQuery = "SELECT * FROM USERS WHERE USER.USER_ID = ?";
+        return jdbcTemplate.queryForObject(sqlQuery, this::makeUser, userId);
     }
 
     @Override
@@ -101,25 +89,41 @@ public class UserDbStorage implements UserStorage {
         return user;
     }
 
-
     @Override
-    public List getFriends(int userId) throws SQLException {
-        final String sqlQuery = "SELECT FRIEND_ID FROM USERS WHERE USER_ID = ?";
-        List<Integer> userFriends = jdbcTemplate.queryForList(sqlQuery, Integer.class, userId);
-        return userFriends;
+    public User addFriend(int userId, int friendId) {
+        String sqlQuery = "INSERT INTO FRIENDSHIP (USER_ID, FRIEND_ID) VALUES (?, ?)";
+        jdbcTemplate.update(sqlQuery, userId, friendId);
+        log.info("Добавлен друг с id = " + friendId);
+        return getUserById(userId);
     }
 
+    @Override
+    public List<User> getFriends(int userId) {
+        String sqlQuery = "SELECT * FROM USERS u WHERE u.USER_ID IN" +
+                "(SELECT FRIEND_ID FROM FRIENDSHIP f WHERE f.USER_ID = ?)";
+        List<User> friends = jdbcTemplate.query(sqlQuery, this::makeUser, userId);
+        return friends;
+    }
+
+    @Override
+    public User deleteFriend(int userId, int friendId) {
+        String sqlQuery = "DELETE FROM FRIENDSHIP WHERE USER_ID = ? AND FRIEND_ID = ?";
+        jdbcTemplate.update(sqlQuery, userId, friendId);
+        log.info("Удален друг с id = " + friendId);
+        return getUserById(userId);
+    }
 
     @Override
     public List<User> getCommonFriends(int userId, int otherId) {
-        String sql = "SELECT * FROM USERS " +
-                "INNER JOIN FRIENDSHIP ON USERS.USER_ID = FRIENDSHIP.FRIEND_ID " +
-                "WHERE FRIENDSHIP.USER_ID = ? " +
+        String sql = "SELECT u.* FROM USERS u " +
+                "INNER JOIN FRIENDSHIP f ON u.USER_ID = f.FRIEND_ID " +
+                "WHERE f.USER_ID = ? " +
                 "AND FRIEND_ID IN (" +
                 "    SELECT FRIEND_ID " +
-                "    FROM FRIENDSHIP " +
-                "    WHERE FRIENDSHIP.USER_ID = ?)";
-        return jdbcTemplate.query(sql, this::makeUser, userId, otherId);
+                "    FROM FRIENDSHIP f " +
+                "    WHERE f.USER_ID = ?)";
+        List<User> commonFriends = jdbcTemplate.query(sql, this::makeUser, userId, otherId);
+        return commonFriends;
     }
 
     public void removeUser(int userId) {

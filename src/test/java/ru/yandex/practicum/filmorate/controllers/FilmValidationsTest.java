@@ -1,21 +1,15 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.core.JdbcTemplate;
-import ru.yandex.practicum.filmorate.dao.Impl.FilmDbStorage;
-import ru.yandex.practicum.filmorate.dao.Impl.GenreDbStorage;
-import ru.yandex.practicum.filmorate.dao.Impl.MpaDbStorage;
-import ru.yandex.practicum.filmorate.dao.Impl.UserDbStorage;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.FilmValidations;
+import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,7 +17,33 @@ class FilmValidationsTest {
 
     @Test
     void validateDescriptionTest() throws IOException {
-        Film film = new Film();
+        Genre genre1 = Genre.builder()
+                .id(2)
+                .name("Драма")
+                .build();
+        Genre genre2 = Genre.builder()
+                .id(4)
+                .name("Триллер")
+                .build();
+        LinkedHashSet<Genre> genres = new LinkedHashSet<>();
+        genres.add(genre1);
+        genres.add(genre2);
+
+        Mpa mpa = Mpa.builder()
+                .id(1)
+                .name("G")
+                .build();
+
+        Film film = Film.builder()
+                .id(1)
+                .name("Name")
+                .description("description")
+                .releaseDate(LocalDate.of(1995, 12, 12))
+                .duration(120)
+                .mpa(mpa)
+                .genres(genres)
+                .build();
+
         String text = null;
         text = new String(Files.readAllBytes(Paths.get(
                 "src/test/java/ru/yandex/practicum/filmorate/controllers/textMoreThan200.txt")),
@@ -35,21 +55,99 @@ class FilmValidationsTest {
 
     @Test
     void validateNameTest() {
-        Film film = new Film();
+        Genre genre1 = Genre.builder()
+                .id(2)
+                .name("Драма")
+                .build();
+        Genre genre2 = Genre.builder()
+                .id(4)
+                .name("Триллер")
+                .build();
+        LinkedHashSet<Genre> genres = new LinkedHashSet<>();
+        genres.add(genre1);
+        genres.add(genre2);
+
+        Mpa mpa = Mpa.builder()
+                .id(1)
+                .name("G")
+                .build();
+
+        Film film = Film.builder()
+                .id(1)
+                .name("Name")
+                .description("description")
+                .releaseDate(LocalDate.of(1995, 12, 12))
+                .duration(120)
+                .mpa(mpa)
+                .genres(genres)
+                .build();
+
         film.setName("");
         assertThrows(ValidationException.class, () -> FilmValidations.validateName(film));
     }
 
     @Test
     void validateDateTest() {
-        Film film = new Film();
+        Genre genre1 = Genre.builder()
+                .id(2)
+                .name("Драма")
+                .build();
+        Genre genre2 = Genre.builder()
+                .id(4)
+                .name("Триллер")
+                .build();
+        LinkedHashSet<Genre> genres = new LinkedHashSet<>();
+        genres.add(genre1);
+        genres.add(genre2);
+
+        Mpa mpa = Mpa.builder()
+                .id(1)
+                .name("G")
+                .build();
+
+        Film film = Film.builder()
+                .id(1)
+                .name("Name")
+                .description("description")
+                .releaseDate(LocalDate.of(1995, 12, 12))
+                .duration(120)
+                .mpa(mpa)
+                .genres(genres)
+                .build();
+
         film.setReleaseDate(LocalDate.of(1700, 10, 10));
         assertThrows(ValidationException.class, () -> FilmValidations.validateDate(film));
     }
 
     @Test
     void validateDuration() {
-        Film newFilm = new Film();
+        Genre genre1 = Genre.builder()
+                .id(2)
+                .name("Драма")
+                .build();
+        Genre genre2 = Genre.builder()
+                .id(4)
+                .name("Триллер")
+                .build();
+        LinkedHashSet<Genre> genres = new LinkedHashSet<>();
+        genres.add(genre1);
+        genres.add(genre2);
+
+        Mpa mpa = Mpa.builder()
+                .id(1)
+                .name("G")
+                .build();
+
+        Film newFilm = Film.builder()
+                .id(1)
+                .name("Name")
+                .description("description")
+                .releaseDate(LocalDate.of(1995, 12, 12))
+                .duration(120)
+                .mpa(mpa)
+                .genres(genres)
+                .build();
+
         newFilm.setDuration(-50);
         assertThrows(ValidationException.class, () -> FilmValidations.validateDuration(newFilm));
     }

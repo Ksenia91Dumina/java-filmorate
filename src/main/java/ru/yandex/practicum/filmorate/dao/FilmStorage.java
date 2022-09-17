@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.List;
 
 public interface FilmStorage {
-    Collection<Film> getFilmMap();
+    List<Film> getAllFilms();
 
     Film get(int filmId) throws SQLException;
 
@@ -18,9 +18,9 @@ public interface FilmStorage {
 
     Film updateFilm(Film film);
 
-    void addLike(int userId, int filmId);
+    Film addLike(int userId, int filmId);
 
-    void deleteLike(int userId, int filmId);
+    Film deleteLike(int userId, int filmId);
 
     List<Film> raitingFilm(int count);
 }
