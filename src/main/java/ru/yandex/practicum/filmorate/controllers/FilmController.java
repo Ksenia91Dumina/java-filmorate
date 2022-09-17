@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -7,21 +8,17 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmValidations;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
+import javax.validation.Valid;
 import java.sql.SQLException;
 import java.util.List;
 
 @RestController
-@RequestMapping("films")
+@RequiredArgsConstructor
+@RequestMapping("/films")
 
 @Slf4j
 public class FilmController {
     public final FilmService filmService;
-    private int uniqueID = 1;
-
-    @Autowired
-    public FilmController(FilmService filmService) {
-        this.filmService = filmService;
-    }
 
     @GetMapping()
     public List<Film> getAllFilms() {
@@ -29,12 +26,12 @@ public class FilmController {
     }
 
     @GetMapping("/{filmId}")
-    public Film getFilm(@PathVariable int filmId) throws SQLException {
+    public Film getFilm(@PathVariable int filmId) {
         return filmService.get(filmId);
     }
 
     @PostMapping()
-    public Film createFilm(@RequestBody Film film) {
+    public Film createFilm(@Valid @RequestBody Film film) {
 
         FilmValidations.validateName(film);
         FilmValidations.validateDescription(film);
@@ -45,7 +42,7 @@ public class FilmController {
     }
 
     @PutMapping()
-    public Film updateFilm(@RequestBody Film film) {
+    public Film updateFilm(@Valid @RequestBody Film film) {
         return filmService.updateFilm(film);
     }
 
@@ -54,14 +51,14 @@ public class FilmController {
         filmService.removeFilm(filmId);
     }
 
-    @PutMapping("/{id}/like/{userId}")
-    public void addLike(@RequestBody int id, @RequestBody int userId) throws SQLException {
-        filmService.addLike(userId, id);
+    @PutMapping("/{filmId}/like/{userId}")
+    public void addLike(@RequestBody int filmId, @RequestBody int userId) throws SQLException {
+        filmService.addLike(userId, filmId);
     }
 
-    @DeleteMapping("/{id}/like/{userId}")
-    public void deleteLike(@RequestBody int id, @RequestBody int userId) throws SQLException {
-        filmService.deleteLike(userId, id);
+    @DeleteMapping("/{filmId}/like/{userId}")
+    public void deleteLike(@RequestBody int filmId, @RequestBody int userId) throws SQLException {
+        filmService.deleteLike(userId, filmId);
     }
 
     @GetMapping("/popular")

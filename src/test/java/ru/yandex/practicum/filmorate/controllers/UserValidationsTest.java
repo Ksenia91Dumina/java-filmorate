@@ -13,18 +13,27 @@ class UserValidationsTest {
 
     @Test
     void validateBirthdayTest() {
-        User user = new User();
-        user.setBirthday(LocalDate.MAX);
+        User user = User.builder()
+                .id(1)
+                .email("qazwsx@m.ru")
+                .login("login")
+                .name("name")
+                .birthday(LocalDate.MAX)
+                .build();
+
         assertThrows(ValidationException.class, () -> UserValidations.validateBirthday(user));
     }
 
     @Test
     void validateNameTest() {
-        User user = new User();
-        user.setEmail("asd@gmail.com");
-        user.setLogin("login");
-        user.setName(" ");
-        user.setBirthday(LocalDate.of(1990, 12, 12));
+        User user = User.builder()
+                .id(1)
+                .email("asd@gmail.com")
+                .login("login")
+                .name(" ")
+                .birthday(LocalDate.of(1995, 12, 12))
+                .build();
+
         UserValidations.validateName(user);
         assertEquals(user.getLogin(), user.getName(), "На месте пустого имени - логин");
     }
@@ -32,21 +41,27 @@ class UserValidationsTest {
 
     @Test
     void validateLoginTest() {
-        User user = new User();
-        user.setEmail("asd@gmail.com");
-        user.setLogin("lo  gin");
-        user.setName("name");
-        user.setBirthday(LocalDate.of(1990, 12, 12));
+        User user = User.builder()
+                .id(1)
+                .email("asd@gmail.com")
+                .login("lo  gin")
+                .name("name")
+                .birthday(LocalDate.of(1995, 12, 12))
+                .build();
+
         assertThrows(ValidationException.class, () -> UserValidations.validateLogin(user));
     }
 
     @Test
     void validateEmail() {
-        User user = new User();
-        user.setEmail("asdgmail.com");
-        user.setLogin("login");
-        user.setName("");
-        user.setBirthday(LocalDate.of(1990, 12, 12));
+        User user = User.builder()
+                .id(1)
+                .email("asdgmail.com")
+                .login("login")
+                .name("")
+                .birthday(LocalDate.of(1995, 12, 12))
+                .build();
+
         assertThrows(ValidationException.class, () -> UserValidations.validateEmail(user));
     }
 
