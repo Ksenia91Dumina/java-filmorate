@@ -33,7 +33,7 @@ public class MpaDbStorage implements MpaStorage {
 
     @Override
     public Mpa getMpaById(int mpa_id) {
-        String sqlQuery = "SELECT * FROM MPA WHERE MPA.MPA_ID = ?";
+        String sqlQuery = "SELECT * FROM MPA WHERE MPA_ID = ?";
         return jdbcTemplate.queryForObject(sqlQuery, this::makeMpa, mpa_id);
     }
 
