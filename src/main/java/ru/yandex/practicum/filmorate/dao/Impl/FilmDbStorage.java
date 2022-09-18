@@ -66,7 +66,7 @@ public class FilmDbStorage implements FilmStorage {
         }, keyHolder);
         film.setId(keyHolder.getKey().intValue());
         film.setMpa(mpaService.getMpaById(film.getMpa().getId()));
-        String setGenreForFilm = "INSERT INTO FILM_GENRE(FILM_ID, GENRE_ID)  VALUES (?,?)";
+        String setGenreForFilm = "INSERT INTO FILM_GENRES(FILM_ID, GENRE_ID)  VALUES (?,?)";
         if (film.getGenres() != null) {
             LinkedHashSet<Genre> genres = new LinkedHashSet<>();
             for (Genre genre : film.getGenres()) {
@@ -103,8 +103,8 @@ public class FilmDbStorage implements FilmStorage {
                 , film.getMpa().getId()
                 , film.getId());
         film.setMpa(mpaService.getMpaById(film.getMpa().getId()));
-        String deleteGenres = "DELETE FROM FILM_GENRE WHERE FILM_ID = ? ";
-        String setGenreForFilm = "INSERT INTO FILM_GENRE(FILM_ID, GENRE_ID) " +
+        String deleteGenres = "DELETE FROM FILM_GENRES WHERE FILM_ID = ? ";
+        String setGenreForFilm = "INSERT INTO FILM_GENRES(FILM_ID, GENRE_ID) " +
                 "VALUES(?, ?)";
         if (film.getGenres() != null) {
             jdbcTemplate.update(deleteGenres, film.getId());
@@ -127,14 +127,14 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film addLike(int userId, int filmId) {
-        String sqlQuery = "INSERT INTO USERS_LIKES(USER_ID, FILM_ID) VALUES (?, ?)";
+        String sqlQuery = "INSERT INTO LIKES(USER_ID, FILM_ID) VALUES (?, ?)";
         jdbcTemplate.update(sqlQuery, userId, filmId);
         return get(filmId);
     }
 
     @Override
     public Film deleteLike(int userId, int filmId) {
-        String sqlQuery = "DELETE FROM USERS_LIKES WHERE USER_ID = ? AND FILM_ID = ?";
+        String sqlQuery = "DELETE FROM LIKES WHERE USER_ID = ? AND FILM_ID = ?";
         jdbcTemplate.update(sqlQuery, userId, filmId);
         return get(filmId);
     }
@@ -142,9 +142,9 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> raitingFilm(int count) {
         String sql = "SELECT * FROM FILMS " +
-                "LEFT JOIN USERS_LIKES ON FILMS.FILM_ID = USERS_LIKES.FILM_ID " +
+                "LEFT JOIN LIKES ON FILMS.FILM_ID = LIKES.FILM_ID " +
                 "GROUP BY FILMS.FILM_ID " +
-                "ORDER BY COUNT(USERS_LIKES.FILM_ID) DESC " +
+                "ORDER BY COUNT(LIKES.FILM_ID) DESC " +
                 "LIMIT ?";
         return jdbcTemplate.query(sql, this::makeFilm, count);
     }

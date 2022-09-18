@@ -2,14 +2,12 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.UserValidations;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
-import java.sql.SQLException;
 import java.util.List;
 
 @RestController
@@ -66,15 +64,15 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/friends")
-    public void getFriends(@PathVariable int userId) {
+    public List<User> getFriends(@PathVariable int userId) {
         log.info("Запрос GET - вывод друзей пользователя номеру его id");
-        userService.getFriends(userId);
+        return userService.getFriends(userId);
     }
 
     @GetMapping("/{userId}/friends/common/{otherId}")
-    public void getCommonFriends(@PathVariable int userId, @PathVariable int otherId) {
+    public List<User> getCommonFriends(@PathVariable int userId, @PathVariable int otherId) {
         log.info("Запрос GET - вывод общих друзей для двух пользователей по номерам их id");
-        userService.getCommonFriends(userId, otherId);
+        return userService.getCommonFriends(userId, otherId);
     }
 
 

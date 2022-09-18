@@ -9,29 +9,28 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
-import java.io.IOException;
 
 @RestControllerAdvice
 @Slf4j
 public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleNotFoundException(final NotFoundException e){
-        log.info("404 {}", e.getMessage(),e);
+    public ErrorResponse handleNotFoundException(final NotFoundException e) {
+        log.info("404 {}", e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidationException(final ValidationException e){
-        log.info("400 {}", e.getMessage(),e);
+    public ErrorResponse handleValidationException(final ValidationException e) {
+        log.info("400 {}", e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleIfAnyException(final IOException e){
-        log.info("500 {}", e.getMessage(),e);
+    public ErrorResponse handleIfAnyException(final Exception e) {
+        log.info("500 {}", e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
 }
