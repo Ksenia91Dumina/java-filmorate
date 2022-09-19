@@ -1,71 +1,172 @@
-/*package ru.yandex.practicum.filmorate.controllers;
+package ru.yandex.practicum.filmorate.controllers;
 
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import ru.yandex.practicum.filmorate.dao.GenresStorage;
-import ru.yandex.practicum.filmorate.dao.Impl.FilmDbStorage;
-import ru.yandex.practicum.filmorate.dao.Impl.GenreDbStorage;
-import ru.yandex.practicum.filmorate.dao.Impl.MpaDbStorage;
-import ru.yandex.practicum.filmorate.dao.Impl.UserDbStorage;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.time.LocalDate;
-import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
+@AutoConfigureTestDatabase
 class FilmControllerTest {
 
-    public FilmController filmController;
-    public Film film1 = new Film();
-    public Film film2 = new Film();
+    private final FilmController filmController;
+    private final JdbcTemplate jdbcTemplate;
+
+    private Film film1;
+    private Film film2;
+
+    @Autowired
+    public FilmControllerTest(FilmController filmController, JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.filmController = filmController;
+    }
 
     @BeforeEach
     void init() {
-        filmController = new FilmController(new FilmService(new FilmDbStorage(new JdbcTemplate()),
-        new MpaDbStorage(new JdbcTemplate()), new GenreDbStorage(new JdbcTemplate()), new UserDbStorage()));
-        film1.setName("Film1 name");
-        film1.setDescription("description of Film1");
-        film1.setReleaseDate(LocalDate.of(2000, 10, 10));
-        film1.setDuration(135);
-        film2.setName("Film2 name");
-        film2.setDescription("description of Film2");
-        film2.setReleaseDate(LocalDate.of(2010, 06, 15));
-        film2.setDuration(170);
+        String sqlQuery = "DELETE FROM FILMS ";
+        jdbcTemplate.update(sqlQuery);
+
+        Genre genre1 = Genre.builder()
+                .id(2)
+                .name("Драма")
+                .build();
+        Genre genre2 = Genre.builder()
+                .id(4)
+                .name("Триллер")
+                .build();
+        LinkedHashSet<Genre> genres = new LinkedHashSet<>();
+        genres.add(genre1);
+        genres.add(genre2);
+
+        Mpa mpa1 = Mpa.builder()
+                .id(1)
+                .name("G")
+                .build();
+        Mpa mpa2 = Mpa.builder()
+                .id(2)
+                .name("PG")
+                .build();
+
+        film1 = Film.builder()
+                .id(1)
+                .name("First film")
+                .description("First film description")
+                .releaseDate(LocalDate.of(2020, 1, 1))
+                .duration(180)
+                .mpa(mpa1)
+                .genres(genres)
+                .build();
+        film2 = Film.builder()
+                .id(2)
+                .name("Second film")
+                .description("Second film description")
+                .releaseDate(LocalDate.of(2020, 2, 2))
+                .duration(180)
+                .mpa(mpa2)
+                .genres(genres)
+                .build();
+
         filmController.createFilm(film1);
         filmController.createFilm(film2);
     }
 
+
     @Test
     void getAllFilms() {
-       final Collection<Film> films = filmController.getAllFilms();
-        assertNotNull(films);
-        assertEquals(films.size(), 2, "Два фильма");
+        List<Film> films = filmController.getAllFilms();
+        assertEquals(2, films.size());
     }
 
     @Test
     void createFilm() {
-        Film newFilm = new Film();
-        newFilm.setName("New Film name");
-        newFilm.setDescription("description of New Film");
-        newFilm.setReleaseDate(LocalDate.of(2022, 06, 15));
-        newFilm.setDuration(170);
+        Genre genre1 = Genre.builder()
+                .id(2)
+                .name("Драма")
+                .build();
+        Genre genre2 = Genre.builder()
+                .id(4)
+                .name("Триллер")
+                .build();
+        LinkedHashSet<Genre> genres = new LinkedHashSet<>();
+        genres.add(genre1);
+        genres.add(genre2);
+
+        Mpa mpa = Mpa.builder()
+                .id(1)
+                .name("G")
+                .build();
+
+        Film newFilm = Film.builder()
+                .id(3)
+                .name("New film")
+                .description("New film description")
+                .releaseDate(LocalDate.of(2022, 8, 27))
+                .duration(210)
+                .mpa(mpa)
+                .genres(genres)
+                .build();
         filmController.createFilm(newFilm);
-        final Collection<Film> films = filmController.getAllFilms();
-        assertNotNull(films);
-        assertEquals(films.size(), 3, "Три фильма");
+        List<Film> films = filmController.getAllFilms();
+        assertEquals(3, films.size());
     }
 
     @Test
     void updateFilm() {
-       film1.setName("New Name");
-        filmController.updateFilm(film1);
-        final Collection<Film> films = filmController.getAllFilms();
-        assertNotNull(films);
-        assertEquals("New Name", film1.getName(), "Фильм обновлен");
+        Genre genre1 = Genre.builder()
+                .id(1)
+                .name("Комедия")
+                .build();
+        Genre genre2 = Genre.builder()
+                .id(6)
+                .name("Боевик")
+                .build();
+        LinkedHashSet<Genre> genres = new LinkedHashSet<>();
+        genres.add(genre1);
+        genres.add(genre2);
+
+        Mpa mpa1 = Mpa.builder()
+                .id(2)
+                .name("PG")
+                .build();
+        Mpa mpa2 = Mpa.builder()
+                .id(3)
+                .name("PG-13")
+                .build();
+
+        Film newFilm = Film.builder()
+                .id(4)
+                .name("New film")
+                .description("New film description")
+                .releaseDate(LocalDate.of(2022, 8, 27))
+                .duration(210)
+                .mpa(mpa1)
+                .genres(genres)
+                .build();
+        filmController.createFilm(newFilm);
+        newFilm.setName("New name for film");
+        newFilm.setMpa(mpa2);
+        filmController.updateFilm(newFilm);
+        assertEquals("New name for film", newFilm.getName());
+        assertEquals(mpa2, newFilm.getMpa());
     }
 
+    @Test
+    void deleteFilmTest() {
+        filmController.removeFilm(film1.getId());
+        List<Film> films = filmController.getAllFilms();
+        assertEquals(1, films.size());
+    }
 
-}*/
+}
