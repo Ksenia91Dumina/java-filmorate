@@ -23,7 +23,7 @@ class UserControllerTest {
     private User user2;
 
     @Autowired
-    public UserControllerTest(UserController userController , JdbcTemplate jdbcTemplate) {
+    public UserControllerTest(UserController userController, JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.userController = userController;
     }
@@ -33,7 +33,7 @@ class UserControllerTest {
         String sqlQuery = "DELETE FROM USERS ";
         jdbcTemplate.update(sqlQuery);
 
-         user1 = User.builder()
+        user1 = User.builder()
                 .id(1)
                 .email("asd@m.ru")
                 .login("login")
@@ -41,7 +41,7 @@ class UserControllerTest {
                 .birthday(LocalDate.of(1990, 12, 12))
                 .build();
 
-         user2 = User.builder()
+        user2 = User.builder()
                 .id(2)
                 .email("zxc@m.ru")
                 .login("log2")
@@ -95,9 +95,28 @@ class UserControllerTest {
     }
 
     @Test
-    void addFriendTest(){
+    void addAndGetFriendTest() {
         userController.addFriend(user1.getId(), user2.getId());
         List<User> friends = userController.getFriends(user1.getId());
+        assertEquals(1, friends.size());
+    }
+
+    @Test
+    void deleteFriendTest() {
+        User user = User.builder()
+                .id(4)
+                .email("asd@gmail.com")
+                .login("newLogin")
+                .name("New name")
+                .birthday(LocalDate.of(1990, 12, 12))
+                .build();
+        userController.createUser(user);
+        userController.addFriend(user1.getId(), user2.getId());
+        userController.addFriend(user1.getId(), user.getId());
+        List<User> friends = userController.getFriends(user1.getId());
+        assertEquals(2, friends.size());
+        userController.deleteFriend(user1.getId(), user2.getId());
+        friends = userController.getFriends(user1.getId());
         assertEquals(1, friends.size());
     }
 
